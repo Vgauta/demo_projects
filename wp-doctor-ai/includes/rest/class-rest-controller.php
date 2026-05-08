@@ -154,11 +154,13 @@ final class RestController
         $licensing = $this->container->licensing();
 
         if (! $licensing->feature_enabled('one_click_solution')) {
+            $checkout_url = $licensing->checkout_url();
+
             return rest_ensure_response(array(
                 'premium_required' => true,
-                'checkout_url' => $licensing->checkout_url(),
+                'checkout_url' => $checkout_url,
                 'message' => $translations->translate('premium_solution_required', $language),
-                'payment_note' => $translations->translate('premium_checkout_not_configured', $language),
+                'payment_note' => $checkout_url ? '' : $translations->translate('premium_checkout_not_configured', $language),
             ));
         }
 

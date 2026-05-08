@@ -53,6 +53,7 @@ final class Admin
                 'runScan' => esc_html__('Run Browser Scan', 'wp-doctor-ai'),
                 'oneClickSolution' => esc_html__('One-click solution', 'wp-doctor-ai'),
                 'premiumRequired' => esc_html__('Premium required', 'wp-doctor-ai'),
+                'upgradeCheckout' => esc_html__('Upgrade checkout', 'wp-doctor-ai'),
             ),
             'defaultLanguage' => sanitize_key($settings['language'] ?? 'en'),
         ));

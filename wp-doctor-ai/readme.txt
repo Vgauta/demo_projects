@@ -88,7 +88,7 @@ Rescue Credits are intended for optional advanced features such as deeper AI exp
 
 = Where do premium payments go? =
 
-WP Doctor AI does not hold money by itself. Premium checkout must be connected to a merchant or payment provider account owned by the plugin business, such as Stripe, Paddle, Lemon Squeezy, a bank transfer flow, UPI, or another compliant provider. If no checkout URL is configured, the plugin shows a clear “not configured” message instead of pretending payment is active.
+WP Doctor AI does not hold money by itself. The repository build redirects premium upgrade clicks to https://starlineinfotech.net/. WP Doctor AI does not hold money by itself; any real payments must be handled by the merchant or payment provider connected to that site, such as Stripe, Paddle, Lemon Squeezy, a bank transfer flow, UPI, or another compliant provider.
 
 = Can I disable AI features? =
 

@@ -36,14 +36,16 @@ final class ExplanationEngine
             'agency' => 'summary_agency',
         );
 
+        $issue_type = sanitize_key($issue['issue_type'] ?? 'issue');
+
         $result = array(
             'headline' => $base,
             'mode' => $mode,
             'language' => $language,
             'summary' => $this->translations->translate($templates[$mode], $language),
-            'probable_cause' => $issue['probable_cause'] ?? '',
-            'safe_fix' => $issue['suggested_fix'] ?? '',
-            'impact' => $issue['impact'] ?? '',
+            'probable_cause' => $this->translations->translate('cause_' . $issue_type, $language, $issue['probable_cause'] ?? ''),
+            'safe_fix' => $this->translations->translate('fix_' . $issue_type, $language, $issue['suggested_fix'] ?? ''),
+            'impact' => $this->translations->translate('impact_' . $issue_type, $language, $issue['impact'] ?? ''),
             'credit_required' => $advanced && ! $this->ai->is_enabled(),
         );
 

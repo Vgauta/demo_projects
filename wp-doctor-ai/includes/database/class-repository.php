@@ -73,8 +73,60 @@ final class Repository
                 $values[] = sanitize_text_field((string) $filters[$field]);
             }
         }
-        $sql = "SELECT * FROM {$wpdb->prefix}wp_doctor_ai_issues {$where} ORDER BY id DESC LIMIT 100";
-        return $values ? $wpdb->get_results($wpdb->prepare($sql, $values), ARRAY_A) : ($wpdb->get_results($sql, ARRAY_A) ?: array());
+        $sql = "SELECT * FROM {$wpdb->prefix}wp_doctor_ai_issues {$where} ORDER BY id DESC LIMIT 300";
+        $rows = $values ? $wpdb->get_results($wpdb->prepare($sql, $values), ARRAY_A) : ($wpdb->get_results($sql, ARRAY_A) ?: array());
+
+        return array_slice($this->deduplicate_issues($rows), 0, 100);
+    }
+
+    private function deduplicate_issues(array $issues): array
+    {
+        $unique = array();
+        $seen = array();
+
+        foreach ($issues as $issue) {
+            $signature = $this->issue_signature($issue);
+            if (isset($seen[$signature])) {
+                continue;
+            }
+
+            $seen[$signature] = true;
+            $unique[] = $issue;
+        }
+
+        return $unique;
+    }
+
+    private function issue_signature(array $issue): string
+    {
+        $details = json_decode((string) ($issue['technical_details'] ?? ''), true);
+        $details = is_array($details) ? $details : array();
+        $type = sanitize_key($issue['issue_type'] ?? 'unknown');
+
+        if ('console_error' === $type) {
+            return md5(implode('|', array(
+                $type,
+                sanitize_text_field((string) ($details['message'] ?? '')),
+                esc_url_raw((string) ($details['source'] ?? '')),
+                (string) ($details['line'] ?? ''),
+                (string) ($details['column'] ?? ''),
+            )));
+        }
+
+        if ('ajax_failure' === $type) {
+            return md5(implode('|', array(
+                $type,
+                esc_url_raw((string) ($details['url'] ?? '')),
+                (string) ($details['status'] ?? ''),
+            )));
+        }
+
+        return md5(implode('|', array(
+            $type,
+            sanitize_text_field((string) ($issue['issue_uid'] ?? '')),
+            sanitize_text_field((string) ($issue['affected_plugin'] ?? '')),
+            sanitize_key((string) ($issue['translation_key'] ?? '')),
+        )));
     }
 
     public function log_credit(int $amount, int $balance_after, string $action, string $reference = '', string $notes = ''): void

@@ -38,7 +38,7 @@
       anchor.href = link;
       anchor.target = '_blank';
       anchor.rel = 'noopener noreferrer';
-      anchor.textContent = 'Upgrade checkout';
+      anchor.textContent = api.strings && api.strings.upgradeCheckout ? api.strings.upgradeCheckout : 'Upgrade checkout';
       box.appendChild(anchor);
     }
 
@@ -70,8 +70,9 @@
       button.addEventListener('click', function () {
         var holder = button.closest('.wpda-explain-actions');
         var issue = JSON.parse(holder.getAttribute('data-issue'));
+        holder.setAttribute('data-last-mode', button.dataset.mode);
         request('/explain', { method: 'POST', body: JSON.stringify({ issue: issue, mode: button.dataset.mode, language: selectedLanguage(), advanced: false }) }).then(function (data) {
-          writeMessage(holder, 'wpda-explanation', data.headline, [data.summary, data.safe_fix]);
+          writeMessage(holder, 'wpda-explanation', data.headline, [data.summary, data.probable_cause, data.safe_fix, data.impact]);
         });
       });
     });
@@ -83,6 +84,7 @@
         var holder = button.closest('.wpda-explain-actions');
         var issue = JSON.parse(holder.getAttribute('data-issue'));
         button.disabled = true;
+        holder.setAttribute('data-last-solution', '1');
         request('/solution', { method: 'POST', body: JSON.stringify({ issue: issue, language: selectedLanguage() }) }).then(function (data) {
           var title = data.premium_required ? (api.strings && api.strings.premiumRequired ? api.strings.premiumRequired : 'Premium required') : (api.strings && api.strings.oneClickSolution ? api.strings.oneClickSolution : 'One-click solution');
           var lines = [data.message, data.payment_note].concat(data.safe_steps || []);
@@ -90,6 +92,26 @@
         }).finally(function () {
           button.disabled = false;
         });
+      });
+    });
+  }
+
+
+
+  function bindLanguagePicker() {
+    var picker = document.querySelector('[data-wpda-language]');
+    if (!picker) return;
+
+    picker.addEventListener('change', function () {
+      document.querySelectorAll('.wpda-explain-actions[data-last-mode]').forEach(function (holder) {
+        var mode = holder.getAttribute('data-last-mode');
+        var button = holder.querySelector('button[data-mode="' + mode + '"]');
+        if (button) button.click();
+      });
+
+      document.querySelectorAll('.wpda-explain-actions[data-last-solution="1"]').forEach(function (holder) {
+        var button = holder.querySelector('.wpda-one-click-solution');
+        if (button) button.click();
       });
     });
   }
@@ -114,5 +136,6 @@
   bindFilters();
   bindExplain();
   bindSolutions();
+  bindLanguagePicker();
   bindManualScan();
 }());

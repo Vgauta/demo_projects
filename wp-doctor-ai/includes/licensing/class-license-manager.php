@@ -36,7 +36,8 @@ final class LicenseManager
     public function checkout_url(): string
     {
         $settings = get_option('wp_doctor_ai_license', array());
-        $url = isset($settings['checkout_url']) ? esc_url_raw($settings['checkout_url']) : '';
+        $settings = is_array($settings) ? $settings : array();
+        $url = isset($settings['checkout_url']) && $settings['checkout_url'] ? esc_url_raw($settings['checkout_url']) : 'https://starlineinfotech.net/';
 
         return (string) apply_filters('wp_doctor_ai_checkout_url', $url);
     }
