@@ -72,6 +72,11 @@ final class ServiceContainer
         return $this->service('credits');
     }
 
+    public function detector(): DetectionEngine
+    {
+        return $this->service('detector');
+    }
+
     public function scanner(): ScannerEngine
     {
         return $this->service('scanner');
