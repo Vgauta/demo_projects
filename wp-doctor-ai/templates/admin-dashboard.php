@@ -8,6 +8,10 @@
 if (! defined('ABSPATH')) {
     exit;
 }
+
+$wpda_settings = get_option('wp_doctor_ai_settings', array());
+$wpda_settings = is_array($wpda_settings) ? $wpda_settings : array();
+$wpda_language = sanitize_key($wpda_settings['language'] ?? 'en');
 ?>
 <div class="wrap wpda-shell" id="wp-doctor-ai-app">
     <header class="wpda-hero">
@@ -34,7 +38,17 @@ if (! defined('ABSPATH')) {
         <section class="wpda-panel">
             <div class="wpda-panel-head">
                 <div><h2><?php esc_html_e('Issue Explorer', 'wp-doctor-ai'); ?></h2><p><?php esc_html_e('Filter deterministic issue objects by severity, plugin, type, or affected page.', 'wp-doctor-ai'); ?></p></div>
-                <button class="button button-primary wpda-run-scan"><?php esc_html_e('Run Browser Scan', 'wp-doctor-ai'); ?></button>
+                <div class="wpda-panel-actions">
+                    <label class="wpda-language-picker">
+                        <span><?php esc_html_e('Explanation language', 'wp-doctor-ai'); ?></span>
+                        <select data-wpda-language>
+                            <?php foreach ($data['languages'] as $language) : ?>
+                                <option value="<?php echo esc_attr($language); ?>" <?php selected($language, $wpda_language); ?>><?php echo esc_html(strtoupper($language)); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <button class="button button-primary wpda-run-scan"><?php esc_html_e('Run Browser Scan', 'wp-doctor-ai'); ?></button>
+                </div>
             </div>
             <div class="wpda-filters">
                 <select data-filter="severity"><option value=""><?php esc_html_e('All severities', 'wp-doctor-ai'); ?></option><option>critical</option><option>high</option><option>medium</option><option>low</option></select>
@@ -58,6 +72,7 @@ if (! defined('ABSPATH')) {
                                 <button class="button" data-mode="developer"><?php esc_html_e('Developer', 'wp-doctor-ai'); ?></button>
                                 <button class="button" data-mode="store_owner"><?php esc_html_e('Store Owner', 'wp-doctor-ai'); ?></button>
                                 <button class="button" data-mode="agency"><?php esc_html_e('Agency', 'wp-doctor-ai'); ?></button>
+                                <button class="button button-primary wpda-one-click-solution" data-solution="1"><?php esc_html_e('One-click solution', 'wp-doctor-ai'); ?><?php if (! $data['is_premium']) : ?> <span><?php esc_html_e('(Premium)', 'wp-doctor-ai'); ?></span><?php endif; ?></button>
                             </div>
                         </div>
                     </article>
@@ -69,6 +84,14 @@ if (! defined('ABSPATH')) {
             <h2><?php esc_html_e('Rescue Credits', 'wp-doctor-ai'); ?></h2>
             <p><?php esc_html_e('Use credits only for advanced AI explanations, translations, summaries, printable reports, and root-cause prioritization.', 'wp-doctor-ai'); ?></p>
             <div class="wpda-rescue-box"><?php esc_html_e('Optional advanced explanations can use Rescue Credits when AI features are enabled. Basic diagnostics remain available without credits.', 'wp-doctor-ai'); ?></div>
+            <h3><?php esc_html_e('Premium plan', 'wp-doctor-ai'); ?></h3>
+            <p><strong><?php esc_html_e('Current plan:', 'wp-doctor-ai'); ?></strong> <?php echo esc_html($data['plan']); ?></p>
+            <p><?php esc_html_e('One-click guided solutions are premium-only and always start in safe preview mode. They do not automatically disable plugins or edit files.', 'wp-doctor-ai'); ?></p>
+            <?php if ($data['checkout_url']) : ?>
+                <p><a class="button button-primary" href="<?php echo esc_url($data['checkout_url']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Upgrade checkout', 'wp-doctor-ai'); ?></a></p>
+            <?php else : ?>
+                <p class="wpda-muted"><?php esc_html_e('Premium checkout is not configured yet. Money from premium purchases will go to the Stripe, Paddle, Lemon Squeezy, bank, UPI, or other merchant account you connect later; WP Doctor AI does not hold funds by itself.', 'wp-doctor-ai'); ?></p>
+            <?php endif; ?>
             <h3><?php esc_html_e('Exports', 'wp-doctor-ai'); ?></h3>
             <p><a class="button" href="<?php echo esc_url($data['scans'] ? admin_url('admin-post.php?action=wp_doctor_ai_export&format=txt&_wpnonce=' . wp_create_nonce('wp_doctor_ai_export')) : '#'); ?>">TXT</a> <a class="button" href="<?php echo esc_url(admin_url('admin-post.php?action=wp_doctor_ai_export&format=json&_wpnonce=' . wp_create_nonce('wp_doctor_ai_export'))); ?>">JSON</a> <a class="button" href="<?php echo esc_url(admin_url('admin-post.php?action=wp_doctor_ai_export&format=pdf&_wpnonce=' . wp_create_nonce('wp_doctor_ai_export'))); ?>"><?php esc_html_e('Printable HTML', 'wp-doctor-ai'); ?></a></p>
             <h3><?php esc_html_e('Safe Mode', 'wp-doctor-ai'); ?></h3>

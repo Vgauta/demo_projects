@@ -46,7 +46,7 @@ Initial deterministic explanation maps are prepared for:
 
 = Rescue Credits =
 
-WP Doctor AI includes a free scan allowance and an architecture for optional Rescue Credits. Raw diagnostic scans are not charged credits. Credits are intended only for advanced optional features such as deeper AI explanations, summaries, translations, printable reports, or developer reports when those integrations are enabled.
+WP Doctor AI includes a free scan allowance and an architecture for optional Rescue Credits. Raw diagnostic scans are not charged credits. Credits are intended only for advanced optional features such as deeper AI explanations, summaries, translations, printable reports, or developer reports when those integrations are enabled. Premium one-click guided solutions are gated behind a premium license and start in safe preview mode only.
 
 = Privacy and external services =
 
@@ -54,7 +54,7 @@ The plugin works without AI APIs. No external AI provider is contacted by defaul
 
 = Freemium positioning =
 
-The free version is intended to provide useful basic diagnostics, issue severity, and limited explanations. It does not use deceptive lock screens, fake urgency, spam notices, or dashboard hijacking.
+The free version is intended to provide useful basic diagnostics, issue severity, and limited explanations. Premium-only features, such as one-click guided solution previews, are clearly labeled. The plugin does not use deceptive lock screens, fake urgency, spam notices, or dashboard hijacking.
 
 == Installation ==
 
@@ -68,7 +68,7 @@ The free version is intended to provide useful basic diagnostics, issue severity
 
 = Does this plugin automatically fix issues? =
 
-No. WP Doctor AI provides diagnostics, explanations, and safe recommendations. It does not automatically edit files, disable plugins, change themes, or perform destructive operations.
+No. WP Doctor AI provides diagnostics, explanations, and safe recommendations. The one-click solution button is a premium guided preview and does not automatically edit files, disable plugins, change themes, or perform destructive operations.
 
 = Does it support WooCommerce? =
 
@@ -84,7 +84,11 @@ No external service is contacted by default. Diagnostic data is stored locally i
 
 = How do Rescue Credits work? =
 
-Rescue Credits are intended for optional advanced features such as deeper AI explanations, multilingual AI summaries, printable reports, and developer reports. Basic raw scanning is not charged credits.
+Rescue Credits are intended for optional advanced features such as deeper AI explanations, multilingual AI summaries, printable reports, and developer reports. Basic raw scanning is not charged credits. Premium license checks are separate from credits; one-click guided solution previews require a premium plan.
+
+= Where do premium payments go? =
+
+WP Doctor AI does not hold money by itself. Premium checkout must be connected to a merchant or payment provider account owned by the plugin business, such as Stripe, Paddle, Lemon Squeezy, a bank transfer flow, UPI, or another compliant provider. If no checkout URL is configured, the plugin shows a clear “not configured” message instead of pretending payment is active.
 
 = Can I disable AI features? =
 
@@ -100,8 +104,9 @@ No. It helps explain likely technical issues and safe next steps. Complex or hig
 2. Issue Explorer with filters for severity, plugin, issue type, and affected page.
 3. Detailed issue explanation with technical details, confidence score, probable cause, and safe next step.
 4. Explain Like feature with Beginner, Developer, Store Owner, and Agency explanation modes.
-5. Rescue Credits modal explaining optional advanced features without blocking basic diagnostics.
+5. Rescue Credits and premium plan panel explaining optional advanced features without blocking basic diagnostics.
 6. Safe mode testing concept for temporary, reversible conflict checks.
+7. Native-language explanation selector with one-click solution premium gating.
 
 == Changelog ==
 
@@ -110,6 +115,7 @@ No. It helps explain likely technical issues and safe next steps. Complex or hig
 * Added deterministic diagnostics for console errors, jQuery conflicts, duplicate scripts, AJAX/REST failures, and Elementor crashes.
 * Added structured issue records with severity, confidence, probable cause, safe fix, affected plugin, and affected page.
 * Added admin dashboard, REST API, browser collector, multilingual explanation maps, and Rescue Credits accounting architecture.
+* Added native-language explanations and premium-gated one-click guided solution previews.
 
 == Upgrade Notice ==
 

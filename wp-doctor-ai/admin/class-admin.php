@@ -39,6 +39,9 @@ final class Admin
         if ('toplevel_page_wp-doctor-ai' !== $hook) {
             return;
         }
+        $settings = get_option('wp_doctor_ai_settings', array());
+        $settings = is_array($settings) ? $settings : array();
+
         wp_enqueue_style('wp-doctor-ai-admin', WP_DOCTOR_AI_URL . 'assets/css/admin.css', array(), WP_DOCTOR_AI_VERSION);
         wp_enqueue_script('wp-doctor-ai-admin', WP_DOCTOR_AI_URL . 'assets/js/admin.js', array(), WP_DOCTOR_AI_VERSION, true);
         wp_localize_script('wp-doctor-ai-admin', 'WPDoctorAIAdmin', array(
@@ -48,7 +51,10 @@ final class Admin
             'strings' => array(
                 'scanning' => esc_html__('Scanning…', 'wp-doctor-ai'),
                 'runScan' => esc_html__('Run Browser Scan', 'wp-doctor-ai'),
+                'oneClickSolution' => esc_html__('One-click solution', 'wp-doctor-ai'),
+                'premiumRequired' => esc_html__('Premium required', 'wp-doctor-ai'),
             ),
+            'defaultLanguage' => sanitize_key($settings['language'] ?? 'en'),
         ));
     }
 
@@ -60,6 +66,9 @@ final class Admin
             'languages' => $this->container->translations()->languages(),
             'scans' => $this->container->repository()->recent_scans(5),
             'issues' => $this->container->repository()->issues(),
+            'plan' => $this->container->licensing()->plan(),
+            'is_premium' => $this->container->licensing()->is_premium(),
+            'checkout_url' => $this->container->licensing()->checkout_url(),
         );
         include WP_DOCTOR_AI_PATH . 'templates/admin-dashboard.php';
     }

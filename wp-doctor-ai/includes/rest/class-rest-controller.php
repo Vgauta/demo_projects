@@ -69,6 +69,16 @@ final class RestController
                 ),
             ),
         ));
+        register_rest_route(WP_DOCTOR_AI_REST_NAMESPACE, '/solution', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'solution'),
+            'permission_callback' => array($this, 'can_manage'),
+            'args' => array(
+                'language' => array(
+                    'sanitize_callback' => 'sanitize_key',
+                ),
+            ),
+        ));
         register_rest_route(WP_DOCTOR_AI_REST_NAMESPACE, '/credits/adjust', array(
             'methods' => 'POST',
             'callback' => array($this, 'adjust_credits'),
@@ -132,6 +142,35 @@ final class RestController
             $advanced
         );
         return rest_ensure_response($explanation);
+    }
+
+
+    public function solution(WP_REST_Request $request): WP_REST_Response
+    {
+        $params = (array) $request->get_json_params();
+        $language = sanitize_key($params['language'] ?? 'en');
+        $issue = (array) ($params['issue'] ?? array());
+        $translations = $this->container->translations();
+        $licensing = $this->container->licensing();
+
+        if (! $licensing->feature_enabled('one_click_solution')) {
+            return rest_ensure_response(array(
+                'premium_required' => true,
+                'checkout_url' => $licensing->checkout_url(),
+                'message' => $translations->translate('premium_solution_required', $language),
+                'payment_note' => $translations->translate('premium_checkout_not_configured', $language),
+            ));
+        }
+
+        return rest_ensure_response(array(
+            'premium_required' => false,
+            'message' => $translations->translate('solution_preview_ready', $language),
+            'safe_steps' => array_values(array_filter(array(
+                sanitize_text_field($issue['probable_cause'] ?? ''),
+                sanitize_text_field($issue['suggested_fix'] ?? ''),
+                $translations->translate('solution_safe_mode_step', $language),
+            ))),
+        ));
     }
 
     public function adjust_credits(WP_REST_Request $request): WP_REST_Response

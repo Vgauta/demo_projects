@@ -11,6 +11,40 @@
     return fetch(api.restUrl + path, options).then(function (response) { return response.json(); });
   }
 
+  function selectedLanguage() {
+    var picker = document.querySelector('[data-wpda-language]');
+    return (picker && picker.value) || api.defaultLanguage || 'en';
+  }
+
+  function writeMessage(holder, className, title, lines, link) {
+    var box = holder.querySelector('.' + className) || document.createElement('div');
+    box.className = className;
+    box.textContent = '';
+
+    var strong = document.createElement('strong');
+    strong.textContent = title || '';
+    box.appendChild(strong);
+
+    (lines || []).forEach(function (line) {
+      if (!line) return;
+      var paragraph = document.createElement('p');
+      paragraph.textContent = line;
+      box.appendChild(paragraph);
+    });
+
+    if (link) {
+      var anchor = document.createElement('a');
+      anchor.className = 'button button-primary';
+      anchor.href = link;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      anchor.textContent = 'Upgrade checkout';
+      box.appendChild(anchor);
+    }
+
+    holder.appendChild(box);
+  }
+
   function bindIssueToggles() {
     document.querySelectorAll('.wpda-issue-toggle').forEach(function (button) {
       button.addEventListener('click', function () { button.closest('.wpda-issue').classList.toggle('open'); });
@@ -32,15 +66,29 @@
   }
 
   function bindExplain() {
-    document.querySelectorAll('.wpda-explain-actions button').forEach(function (button) {
+    document.querySelectorAll('.wpda-explain-actions button[data-mode]').forEach(function (button) {
       button.addEventListener('click', function () {
         var holder = button.closest('.wpda-explain-actions');
         var issue = JSON.parse(holder.getAttribute('data-issue'));
-        request('/explain', { method: 'POST', body: JSON.stringify({ issue: issue, mode: button.dataset.mode, language: 'en', advanced: false }) }).then(function (data) {
-          var box = holder.querySelector('.wpda-explanation') || document.createElement('div');
-          box.className = 'wpda-explanation';
-          box.innerHTML = '<strong>' + data.headline + '</strong><p>' + data.summary + '</p><p>' + data.safe_fix + '</p>';
-          holder.appendChild(box);
+        request('/explain', { method: 'POST', body: JSON.stringify({ issue: issue, mode: button.dataset.mode, language: selectedLanguage(), advanced: false }) }).then(function (data) {
+          writeMessage(holder, 'wpda-explanation', data.headline, [data.summary, data.safe_fix]);
+        });
+      });
+    });
+  }
+
+  function bindSolutions() {
+    document.querySelectorAll('.wpda-one-click-solution').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var holder = button.closest('.wpda-explain-actions');
+        var issue = JSON.parse(holder.getAttribute('data-issue'));
+        button.disabled = true;
+        request('/solution', { method: 'POST', body: JSON.stringify({ issue: issue, language: selectedLanguage() }) }).then(function (data) {
+          var title = data.premium_required ? (api.strings && api.strings.premiumRequired ? api.strings.premiumRequired : 'Premium required') : (api.strings && api.strings.oneClickSolution ? api.strings.oneClickSolution : 'One-click solution');
+          var lines = [data.message, data.payment_note].concat(data.safe_steps || []);
+          writeMessage(holder, 'wpda-solution', title, lines, data.checkout_url || '');
+        }).finally(function () {
+          button.disabled = false;
         });
       });
     });
@@ -65,5 +113,6 @@
   bindIssueToggles();
   bindFilters();
   bindExplain();
+  bindSolutions();
   bindManualScan();
 }());
