@@ -1,0 +1,146 @@
+=== WP Doctor AI ===
+Contributors: wpdoctorai
+Tags: diagnostics, javascript, ajax, elementor, troubleshooting
+Requires at least: 6.0
+Tested up to: 6.9
+Requires PHP: 7.4
+Stable tag: 1.0.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+WordPress diagnostics and issue explanation platform for console errors, AJAX failures, jQuery conflicts, duplicate scripts, and Elementor crashes.
+
+== Description ==
+
+WP Doctor AI is a WordPress diagnostics and issue explanation platform. It helps site owners, developers, agencies, WooCommerce store owners, and Elementor users understand common front-end issues without reading cryptic browser errors.
+
+The plugin uses deterministic checks for the actual diagnostics. Optional AI features are designed only to help explain, summarize, translate, or prepare reports from issues already detected by the plugin.
+
+WP Doctor AI does not automatically change files, disable plugins, modify themes, or apply risky fixes. Recommendations are informational and should be tested safely, preferably on a staging site.
+
+= MVP diagnostics included =
+
+* JavaScript console error detection.
+* jQuery conflict detection.
+* Duplicate script detection.
+* Failed AJAX and REST request detection.
+* Elementor widget or editor crash detection.
+
+= Explanation modes =
+
+* Beginner explanations.
+* Developer explanations.
+* Store owner explanations.
+* Agency explanations.
+
+= Multilingual explanation support =
+
+Initial deterministic explanation maps are prepared for:
+
+* English.
+* Hindi.
+* Spanish.
+* German.
+* Japanese.
+* French.
+
+Premium AI solution plans can request any language supported by the selected AI provider by typing the language name in the dashboard, for example Arabic, Tamil, Portuguese, Bengali, Urdu, Korean, Italian, or another language.
+
+= Pro add-on =
+
+WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini one-click AI solution plans, and custom AI language requests. The free plugin remains useful without Pro.
+
+= Rescue Credits =
+
+WP Doctor AI includes a free scan allowance and an architecture for optional Rescue Credits. Raw diagnostic scans are not charged credits. Premium sites receive unlimited scans. Credits are intended only for advanced optional features such as deeper AI explanations, summaries, translations, printable reports, or developer reports when those integrations are enabled. Premium one-click guided solutions are gated behind a premium license and start in safe preview mode only.
+
+= Privacy and external services =
+
+The plugin works without AI APIs. No external AI provider is contacted by default. Premium AI one-click solution plans can use a Google AI Studio / Gemini API key entered by the administrator. When enabled, the plugin sends only structured issue data needed to generate explanations or safe solution plans.
+
+= Freemium positioning =
+
+The free version is intended to provide useful basic diagnostics, issue severity, and limited explanations. Premium-only features, such as one-click guided solution previews, are clearly labeled. The plugin does not use deceptive lock screens, fake urgency, spam notices, or dashboard hijacking.
+
+== Installation ==
+
+1. Upload the `wp-doctor-ai` folder to the `/wp-content/plugins/` directory, or install the plugin ZIP from the WordPress admin Plugins screen.
+2. Activate the plugin through the Plugins screen in WordPress.
+3. Open **WP Doctor AI** from the WordPress admin menu.
+4. Run a browser scan from the dashboard or browse the site as an administrator to collect diagnostic signals.
+5. Review the Issue Explorer for severity, confidence, affected plugin/page, and safe next steps.
+
+== Frequently Asked Questions ==
+
+= Does this plugin automatically fix issues? =
+
+No. WP Doctor AI provides diagnostics, explanations, and safe recommendations. The one-click solution button is a premium guided preview and does not automatically edit files, disable plugins, change themes, or perform destructive operations.
+
+= Does it support WooCommerce? =
+
+The MVP can detect JavaScript and AJAX problems that may affect WooCommerce pages, such as checkout button failures or failed background requests. Dedicated WooCommerce diagnostics are planned as a future module.
+
+= Does it require AI APIs? =
+
+No. The core plugin works without AI APIs. Diagnostics are deterministic and run inside WordPress and the browser session. Premium one-click AI solution plans require a Google AI Studio API key. If the key is missing, WP Doctor AI tells the admin to add the key first instead of pretending AI fixes are available.
+
+= How do I get a Google AI Studio API key? =
+
+1. Open https://aistudio.google.com/app/apikey and sign in with your Google account.
+2. Click **Get API key** or **Create API key**.
+3. Copy the key and paste it into WP Doctor AI > Premium AI setup.
+4. Keep the key private. Do not paste it into public pages, GitHub, screenshots, or client reports.
+
+= Is user data sent externally? =
+
+No external service is contacted by default. Diagnostic data is stored locally in the WordPress database. If a site administrator adds a Google AI Studio API key and uses a premium AI feature, WP Doctor AI sends structured issue data for that request to Google Gemini so it can generate the requested explanation or safe solution plan.
+
+= How do I activate Pro features? =
+
+Install and activate the separate WP Doctor AI Pro add-on while the free plugin is active. Pro forces the license layer to the pro plan, unlocks unlimited scans, and enables premium AI solution plans after you add a Google AI Studio API key.
+
+= How do Rescue Credits work? =
+
+Rescue Credits are intended for optional advanced features such as deeper AI explanations, multilingual AI summaries, printable reports, and developer reports. Basic raw scanning is not charged credits. Premium license checks are separate from credits; one-click AI guided solution previews require a premium plan and a Google AI Studio API key.
+
+= Where do premium payments go? =
+
+WP Doctor AI does not hold money by itself. The repository build redirects premium upgrade clicks to https://starlineinfotech.net/. WP Doctor AI does not hold money by itself; any real payments must be handled by the merchant or payment provider connected to that site, such as Stripe, Paddle, Lemon Squeezy, a bank transfer flow, UPI, or another compliant provider.
+
+= Can I disable AI features? =
+
+Yes. AI features are disabled by default. The plugin is designed to remain useful with AI disabled.
+
+= Does WP Doctor AI replace a developer? =
+
+No. It helps explain likely technical issues and safe next steps. Complex or high-risk production issues should still be reviewed by a qualified developer.
+
+== Screenshots ==
+
+1. Dashboard overview with total issues, critical issues, AJAX failures, Elementor crashes, and recent scans.
+2. Issue Explorer with filters for severity, plugin, issue type, and affected page.
+3. Detailed issue explanation with technical details, confidence score, probable cause, and safe next step.
+4. Explain Like feature with Beginner, Developer, Store Owner, and Agency explanation modes.
+5. Rescue Credits and premium AI setup panel with Google AI Studio API key instructions.
+6. Safe mode testing concept for temporary, reversible conflict checks.
+7. Native-language explanation selector with one-click solution premium gating.
+
+== Changelog ==
+
+= 1.0.0 =
+* Initial submission-ready MVP.
+* Added deterministic diagnostics for console errors, jQuery conflicts, duplicate scripts, AJAX/REST failures, and Elementor crashes.
+* Added structured issue records with severity, confidence, probable cause, safe fix, affected plugin, and affected page.
+* Added admin dashboard, REST API, browser collector, multilingual explanation maps, and Rescue Credits accounting architecture.
+* Added native-language explanations and premium-gated one-click guided solution previews.
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release. Review settings after activation and run a scan from the WP Doctor AI dashboard.
+
+== License ==
+
+WP Doctor AI is licensed under the GNU General Public License v2.0 or later.
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any later version.
