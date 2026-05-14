@@ -20,7 +20,7 @@ WP Doctor AI Pro is the premium add-on for the free WP Doctor AI diagnostics plu
 * Custom AI language requests for languages supported by the AI provider.
 * Premium checkout/account links for Starline Infotech.
 
-AI solution plans use structured issue data already detected by WP Doctor AI. The AI response is a safe, review-first plan. It does not automatically edit files, disable plugins, modify themes, or perform destructive operations.
+AI explanations and solution plans use structured issue data already detected by WP Doctor AI. The AI response is a safe, review-first plan. It does not automatically edit files, disable plugins, modify themes, or perform destructive operations.
 
 == Installation ==
 

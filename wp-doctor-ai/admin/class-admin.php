@@ -57,7 +57,9 @@ final class Admin
                 'upgradeCheckout' => esc_html__('Upgrade checkout', 'wp-doctor-ai'),
                 'apiKeyRequired' => esc_html__('API key required', 'wp-doctor-ai'),
             ),
-            'defaultLanguage' => sanitize_key($settings['language'] ?? 'en'),
+            'defaultLanguage' => sanitize_text_field($settings['language'] ?? 'en'),
+            'isPremium' => $this->container->licensing()->is_premium(),
+            'aiReady' => $this->container->ai()->has_api_key(),
         ));
     }
 

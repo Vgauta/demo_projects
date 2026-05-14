@@ -49,8 +49,22 @@ final class ExplanationEngine
             'credit_required' => $advanced && ! $this->ai->is_enabled(),
         );
 
-        if ($advanced && $this->ai->is_enabled()) {
-            $result['ai_summary'] = $this->ai->summarize_issue($issue, $mode, $language);
+        if ($advanced) {
+            if (! $this->ai->has_api_key()) {
+                $result['needs_api_key'] = true;
+                $result['summary'] = __('Add your Google AI Studio API key before using AI-generated explanations.', 'wp-doctor-ai');
+                $result['probable_cause'] = '';
+                $result['safe_fix'] = '';
+                $result['impact'] = '';
+            } else {
+                $ai_summary = $this->ai->summarize_issue($issue, $mode, $language);
+                $result['ai_generated'] = true;
+                $result['ai_summary'] = $ai_summary;
+                $result['summary'] = $ai_summary;
+                $result['probable_cause'] = '';
+                $result['safe_fix'] = '';
+                $result['impact'] = '';
+            }
         }
 
         return apply_filters('wp_doctor_ai_explanation', $result, $issue, $mode, $language, $advanced);

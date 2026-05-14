@@ -138,7 +138,8 @@ final class RestController
             'issues' => $this->container->repository()->issues($request->get_params()),
             'scans' => $this->container->repository()->recent_scans(10),
             'credits' => $this->container->credits()->balance(),
-            'free_scans_remaining' => $this->container->credits()->free_scans_remaining(),
+            'free_scans_remaining' => $this->container->licensing()->is_premium() ? 'unlimited' : $this->container->credits()->free_scans_remaining(),
+            'unlimited_scans' => $this->container->licensing()->is_premium(),
             'credit_logs' => $this->container->repository()->credit_logs(20),
         ));
     }
@@ -146,7 +147,7 @@ final class RestController
     public function explain(WP_REST_Request $request): WP_REST_Response
     {
         $params = (array) $request->get_json_params();
-        $advanced = ! empty($params['advanced']);
+        $advanced = ! empty($params['advanced']) || $this->container->licensing()->is_premium();
         $explanation = $this->container->explanations()->explain(
             (array) ($params['issue'] ?? array()),
             sanitize_key($params['mode'] ?? 'beginner'),

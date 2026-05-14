@@ -8,6 +8,7 @@
 namespace WPDoctorAI\AI;
 
 use WPDoctorAI\Credits\CreditManager;
+use WPDoctorAI\Licensing\LicenseManager;
 use WPDoctorAI\Logs\Logger;
 
 if (! defined('ABSPATH')) {
@@ -18,11 +19,13 @@ final class AiManager
 {
     private $credits;
     private $logger;
+    private $licensing;
 
-    public function __construct(CreditManager $credits, Logger $logger)
+    public function __construct(CreditManager $credits, Logger $logger, LicenseManager $licensing)
     {
         $this->credits = $credits;
         $this->logger = $logger;
+        $this->licensing = $licensing;
     }
 
     public function is_enabled(): bool
@@ -54,13 +57,22 @@ final class AiManager
         return array('none', 'openai', 'claude', 'gemini', 'local');
     }
 
+    public function is_premium(): bool
+    {
+        return $this->licensing->is_premium();
+    }
+
     public function summarize_issue(array $issue, string $mode, string $language): string
     {
-        if (! $this->credits->consume(1, 'ai_explanation', $issue['issue_id'] ?? 'issue')) {
+        if (! $this->has_api_key()) {
+            return __('Add your Google AI Studio API key before using AI explanations.', 'wp-doctor-ai');
+        }
+
+        if (! $this->is_premium() && ! $this->credits->consume(1, 'ai_explanation', $issue['issue_id'] ?? 'issue')) {
             return __('Add Rescue Credits to unlock advanced AI explanations.', 'wp-doctor-ai');
         }
 
-        $this->logger->info('AI summary requested', array('provider' => $this->provider(), 'mode' => $mode));
+        $this->logger->info('AI explanation requested', array('provider' => $this->provider(), 'mode' => $mode, 'premium' => $this->is_premium()));
 
         $summary = apply_filters('wp_doctor_ai_ai_summary', '', $issue, $mode, $language, $this->provider());
         if ($summary) {
@@ -118,7 +130,7 @@ final class AiManager
 
     private function build_explanation_prompt(array $issue, string $mode, string $language): string
     {
-        return 'Explain this deterministic WordPress issue in ' . $language . ' for ' . $mode . '. Do not invent a diagnosis. Use only the provided issue JSON and give safe, reversible advice. Issue JSON: ' . wp_json_encode($issue);
+        return 'You are WP Doctor AI. Write an AI-generated explanation in ' . $language . ' for this audience mode: ' . $mode . '. Use only the deterministic WordPress issue JSON below. Do not invent plugins, files, or causes not present in the data. Explain what the error means, likely impact, and safe next steps. Do not claim you changed the website. Issue JSON: ' . wp_json_encode($issue);
     }
 
     private function build_solution_prompt(array $issue, string $language): string

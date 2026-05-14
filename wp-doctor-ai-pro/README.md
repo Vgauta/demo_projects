@@ -5,7 +5,7 @@ WP Doctor AI Pro is the premium add-on for the free WP Doctor AI plugin.
 ## What Pro unlocks
 
 - Unlimited manual scans.
-- Premium one-click AI solution plans.
+- Premium Gemini-generated issue explanations and one-click AI solution plans.
 - Google AI Studio / Gemini API key support.
 - Custom AI language requests for any language supported by the AI provider.
 - Premium checkout/account links pointed to <https://starlineinfotech.net/>.

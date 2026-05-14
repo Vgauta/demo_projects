@@ -31,11 +31,11 @@ final class ServiceContainer
         $this->services['repository'] = new Repository();
         $this->services['logger'] = new Logger($this->repository());
         $this->services['translations'] = new TranslationManager();
-        $this->services['ai'] = new AiManager($this->credits(), $this->logger());
+        $this->services['licensing'] = new LicenseManager();
+        $this->services['ai'] = new AiManager($this->credits(), $this->logger(), $this->licensing());
         $this->services['explanations'] = new ExplanationEngine($this->translations(), $this->ai());
         $this->services['detector'] = new DetectionEngine();
         $this->services['scanner'] = new ScannerEngine($this->detector(), $this->repository(), $this->logger());
-        $this->services['licensing'] = new LicenseManager();
     }
 
     public function repository(): Repository

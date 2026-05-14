@@ -48,7 +48,7 @@ Premium AI solution plans can request any language supported by the selected AI 
 
 = Pro add-on =
 
-WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini one-click AI solution plans, and custom AI language requests. The free plugin remains useful without Pro.
+WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini-generated explanations, one-click AI solution plans, and custom AI language requests. The free plugin remains useful without Pro; static explanation maps are used only as the free/offline fallback.
 
 = Rescue Credits =
 
@@ -101,7 +101,7 @@ Install and activate the separate WP Doctor AI Pro add-on while the free plugin 
 
 = How do Rescue Credits work? =
 
-Rescue Credits are intended for optional advanced features such as deeper AI explanations, multilingual AI summaries, printable reports, and developer reports. Basic raw scanning is not charged credits. Premium license checks are separate from credits; one-click AI guided solution previews require a premium plan and a Google AI Studio API key.
+Rescue Credits are intended for optional advanced features such as deeper AI explanations, multilingual AI summaries, printable reports, and developer reports. Basic raw scanning is not charged credits. Premium license checks are separate from credits. Pro AI explanations and one-click AI guided solution previews require the Pro add-on and a Google AI Studio API key; free/offline explanations remain deterministic fallbacks.
 
 = Where do premium payments go? =
 

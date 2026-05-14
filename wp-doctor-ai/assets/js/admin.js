@@ -72,8 +72,9 @@
         var holder = button.closest('.wpda-explain-actions');
         var issue = JSON.parse(holder.getAttribute('data-issue'));
         holder.setAttribute('data-last-mode', button.dataset.mode);
-        request('/explain', { method: 'POST', body: JSON.stringify({ issue: issue, mode: button.dataset.mode, language: selectedLanguage(), advanced: false }) }).then(function (data) {
-          writeMessage(holder, 'wpda-explanation', data.headline, [data.summary, data.probable_cause, data.safe_fix, data.impact]);
+        request('/explain', { method: 'POST', body: JSON.stringify({ issue: issue, mode: button.dataset.mode, language: selectedLanguage(), advanced: !!api.isPremium }) }).then(function (data) {
+          var title = data.needs_api_key ? (api.strings && api.strings.apiKeyRequired ? api.strings.apiKeyRequired : 'API key required') : data.headline;
+          writeMessage(holder, 'wpda-explanation', title, [data.summary, data.probable_cause, data.safe_fix, data.impact]);
         });
       });
     });
