@@ -81,7 +81,12 @@ final class AiManager
         }
 
         if ($this->has_api_key()) {
-            return $this->gemini_request($this->build_explanation_prompt($issue, $mode, $language));
+            $text = $this->gemini_request($this->build_explanation_prompt($issue, $mode, $language));
+            if ($text) {
+                return $text;
+            }
+
+            return $this->last_error ? sprintf(__('AI did not return an explanation. Gemini said: %s', 'wp-doctor-ai'), $this->last_error) : __('AI did not return an explanation. Check your Google AI Studio API key, quota, and model.', 'wp-doctor-ai');
         }
 
         return __('AI adapter is configured but no provider callback returned a summary. Deterministic recommendations are still available.', 'wp-doctor-ai');
@@ -136,7 +141,15 @@ final class AiManager
 
     private function build_explanation_prompt(array $issue, string $mode, string $language): string
     {
-        return 'You are WP Doctor AI. Write an AI-generated explanation in ' . $language . ' for this audience mode: ' . $mode . '. Use only the deterministic WordPress issue JSON below. Do not invent plugins, files, or causes not present in the data. Explain what the error means, likely impact, and safe next steps. Do not claim you changed the website. Issue JSON: ' . wp_json_encode($issue);
+        $mode_instructions = array(
+            'beginner' => 'Use simple, non-technical words and explain what the site owner should notice.',
+            'developer' => 'Use technical details, likely enqueue/runtime causes, and debugging checks.',
+            'store_owner' => 'Focus on sales, checkout, forms, and customer-impact language.',
+            'agency' => 'Focus on client communication, staging workflow, priority, and handoff steps.',
+        );
+        $instruction = $mode_instructions[$mode] ?? $mode_instructions['beginner'];
+
+        return 'You are WP Doctor AI. Write an AI-generated explanation in ' . $language . ' for this audience mode: ' . $mode . '. ' . $instruction . ' Use only the deterministic WordPress issue JSON below. Do not invent plugins, files, or causes not present in the data. Explain what the error means, likely impact, and safe next steps. Do not claim you changed the website. Issue JSON: ' . wp_json_encode($issue);
     }
 
     private function build_solution_prompt(array $issue, string $language): string

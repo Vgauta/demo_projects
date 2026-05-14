@@ -120,8 +120,17 @@
       });
     }
 
+    var timer;
+    function delayedRefresh() {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(refreshMessages, 450);
+    }
+
     if (picker) picker.addEventListener('change', refreshMessages);
-    if (custom) custom.addEventListener('change', refreshMessages);
+    if (custom) {
+      custom.addEventListener('change', refreshMessages);
+      custom.addEventListener('input', delayedRefresh);
+    }
   }
 
   function bindManualScan() {

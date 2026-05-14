@@ -44,7 +44,7 @@ Initial deterministic explanation maps are prepared for:
 * Japanese.
 * French.
 
-Premium AI solution plans can request any language supported by the selected AI provider by typing the language name in the dashboard, for example Arabic, Tamil, Portuguese, Bengali, Urdu, Korean, Italian, or another language.
+Premium AI explanations and solution plans can request any language supported by the selected AI provider by typing the language name in the dashboard, for example Arabic, Tamil, Portuguese, Bengali, Urdu, Korean, Italian, or another language. The free/offline translator also accepts common names for the included maps, such as Hindi, Spanish, German, Japanese, and French.
 
 = Pro add-on =
 
