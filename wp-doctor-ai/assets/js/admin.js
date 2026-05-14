@@ -119,6 +119,7 @@
           var title = data.needs_api_key ? (api.strings && api.strings.apiKeyRequired ? api.strings.apiKeyRequired : 'API key required') : (data.premium_required ? (api.strings && api.strings.premiumRequired ? api.strings.premiumRequired : 'Premium required') : (api.strings && api.strings.oneClickSolution ? api.strings.oneClickSolution : 'One-click solution'));
           var lines = [data.message, data.payment_note];
           if (data.applied_fix && data.applied_fix.message && data.applied_fix.message !== data.message) lines.push(data.applied_fix.message);
+          if (data.applied_fix && data.applied_fix.reload_required) lines.push(api.strings && api.strings.reloadToVerify ? api.strings.reloadToVerify : 'Reload this page or run another scan to verify the fix.');
           lines = lines.concat(data.safe_steps || []);
           writeMessage(holder, 'wpda-solution', title, lines, data.checkout_url || '');
         }).catch(function () {

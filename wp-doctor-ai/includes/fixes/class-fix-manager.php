@@ -16,6 +16,7 @@ final class FixManager
     public function hooks(): void
     {
         add_action('wp_print_scripts', array($this, 'dedupe_duplicate_scripts'), 0);
+        add_action('admin_print_scripts', array($this, 'dedupe_duplicate_scripts'), 0);
     }
 
     public function apply_safe_fix(array $issue): array
@@ -25,22 +26,26 @@ final class FixManager
         if ('duplicate_script' !== $issue_type) {
             return array(
                 'applied' => false,
+                'reload_required' => false,
                 'message' => __('No safe automatic fix is available for this issue type yet. AI generated a review-first plan instead.', 'wp-doctor-ai'),
             );
         }
 
+        $assets = $this->issue_assets($issue);
         $fixes = get_option('wp_doctor_ai_active_fixes', array());
         $fixes = is_array($fixes) ? $fixes : array();
         $fixes['duplicate_script_dedupe'] = array(
             'enabled' => true,
             'created_at' => current_time('mysql'),
             'issue_id' => sanitize_text_field((string) ($issue['issue_uid'] ?? $issue['issue_id'] ?? 'duplicate_script')),
+            'assets' => $assets,
         );
         update_option('wp_doctor_ai_active_fixes', $fixes);
 
         return array(
             'applied' => true,
-            'message' => __('Safe duplicate-script mitigation has been enabled. WP Doctor AI will keep the first matching script and dequeue later duplicates before WordPress prints scripts.', 'wp-doctor-ai'),
+            'reload_required' => true,
+            'message' => __('Safe duplicate-script mitigation is active. Reload the page or run a new scan to verify; WP Doctor AI will keep the first matching script and dequeue later duplicates before WordPress prints scripts.', 'wp-doctor-ai'),
         );
     }
 
@@ -56,6 +61,7 @@ final class FixManager
             return;
         }
 
+        $target_assets = array_map('sanitize_key', (array) ($fixes['duplicate_script_dedupe']['assets'] ?? array()));
         $seen = array();
         foreach ((array) $wp_scripts->queue as $handle) {
             $registered = $wp_scripts->registered[$handle] ?? null;
@@ -64,7 +70,7 @@ final class FixManager
             }
 
             $key = $this->script_key((string) $registered->src);
-            if (! $key) {
+            if (! $key || (! empty($target_assets) && ! in_array($key, $target_assets, true))) {
                 continue;
             }
 
@@ -77,12 +83,34 @@ final class FixManager
         }
     }
 
+    private function issue_assets(array $issue): array
+    {
+        $details = $issue['technical_details'] ?? array();
+        if (is_string($details)) {
+            $decoded = json_decode($details, true);
+            $details = is_array($decoded) ? $decoded : array();
+        }
+
+        $assets = array();
+        if (! empty($details['asset'])) {
+            $assets[] = $this->script_key((string) $details['asset']);
+        }
+
+        foreach ((array) ($details['instances'] ?? array()) as $instance) {
+            if (! empty($instance['src'])) {
+                $assets[] = $this->script_key((string) $instance['src']);
+            }
+        }
+
+        return array_values(array_unique(array_filter($assets)));
+    }
+
     private function script_key(string $src): string
     {
         $src = remove_query_arg(array('ver', 'version'), $src);
         $path = wp_parse_url($src, PHP_URL_PATH);
         $path = $path ? $path : $src;
 
-        return strtolower(trim($path));
+        return sanitize_key(strtolower(basename($path)));
     }
 }
