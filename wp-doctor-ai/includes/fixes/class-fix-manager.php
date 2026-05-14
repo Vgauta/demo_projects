@@ -45,7 +45,8 @@ final class FixManager
         return array(
             'applied' => true,
             'reload_required' => true,
-            'message' => __('Safe duplicate-script mitigation is active. Reload the page or run a new scan to verify; WP Doctor AI will keep the first matching script and dequeue later duplicates before WordPress prints scripts.', 'wp-doctor-ai'),
+            'auto_rescan' => true,
+            'message' => __('Fixed. WP Doctor AI activated the safe duplicate-script mitigation and will rescan after reload so this resolved issue is removed from the report.', 'wp-doctor-ai'),
         );
     }
 
@@ -61,7 +62,7 @@ final class FixManager
             return;
         }
 
-        $target_assets = array_map('sanitize_key', (array) ($fixes['duplicate_script_dedupe']['assets'] ?? array()));
+        $target_assets = array_map('sanitize_text_field', (array) ($fixes['duplicate_script_dedupe']['assets'] ?? array()));
         $seen = array();
         foreach ((array) $wp_scripts->queue as $handle) {
             $registered = $wp_scripts->registered[$handle] ?? null;
@@ -111,6 +112,8 @@ final class FixManager
         $path = wp_parse_url($src, PHP_URL_PATH);
         $path = $path ? $path : $src;
 
-        return sanitize_key(strtolower(basename($path)));
+        $host = (string) wp_parse_url($src, PHP_URL_HOST);
+
+        return sanitize_text_field(strtolower($host . '/' . ltrim($path, '/')));
     }
 }

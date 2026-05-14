@@ -121,7 +121,9 @@
           if (data.applied_fix && data.applied_fix.message && data.applied_fix.message !== data.message) lines.push(data.applied_fix.message);
           if (data.applied_fix && data.applied_fix.reload_required) lines.push(api.strings && api.strings.reloadToVerify ? api.strings.reloadToVerify : 'Reload this page or run another scan to verify the fix.');
           lines = lines.concat(data.safe_steps || []);
+          if (data.applied_fix && data.applied_fix.auto_rescan && data.reload_url) lines.push(api.strings && api.strings.autoRescan ? api.strings.autoRescan : 'Reloading now so WP Doctor AI can rescan and remove the fixed issue from the report.');
           writeMessage(holder, 'wpda-solution', title, lines, data.checkout_url || '');
+          if (data.applied_fix && data.applied_fix.auto_rescan && data.reload_url) window.setTimeout(function () { window.location.href = data.reload_url; }, 900);
         }).catch(function () {
           writeMessage(holder, 'wpda-solution', 'Error', ['The one-click solution request failed. Please try again.']);
         }).finally(function () {
@@ -168,12 +170,14 @@
   function bindManualScan() {
     var run = document.querySelector('.wpda-run-scan');
     if (!run) return;
-    run.addEventListener('click', function () {
+
+    function scan() {
       run.disabled = true;
       run.classList.add('is-loading');
       run.textContent = api.strings && api.strings.scanning ? api.strings.scanning : 'Scanning…';
+      var cleanUrl = window.location.href.replace(/([?&])wpda_autoscan=1(&?)/, function (match, prefix, suffix) { return suffix ? prefix : ''; }).replace(/[?&]$/, '');
       var scripts = Array.prototype.slice.call(document.scripts).map(function (script) { return { src: script.src || '', id: script.id || '' }; });
-      request('/scan', { method: 'POST', body: JSON.stringify({ manual: true, page_url: window.location.href, scripts: scripts, console_errors: [], ajax_failures: [], elementor_events: [] }) }).then(function (data) {
+      request('/scan', { method: 'POST', body: JSON.stringify({ manual: true, page_url: cleanUrl, scripts: scripts, console_errors: [], ajax_failures: [], elementor_events: [] }) }).then(function (data) {
         if (data && data.error) {
           window.alert(data.message || 'Scan limit reached.');
           if (data.checkout_url) window.open(data.checkout_url, '_blank', 'noopener');
@@ -182,13 +186,16 @@
           run.textContent = api.strings && api.strings.runScan ? api.strings.runScan : 'Run Browser Scan';
           return;
         }
-        window.location.reload();
+        window.location.href = cleanUrl;
       }).catch(function () {
         run.disabled = false;
         run.classList.remove('is-loading');
         run.textContent = api.strings && api.strings.runScan ? api.strings.runScan : 'Run Browser Scan';
       });
-    });
+    }
+
+    run.addEventListener('click', scan);
+    if (/[?&]wpda_autoscan=1(?:&|$)/.test(window.location.search)) window.setTimeout(scan, 300);
   }
 
   bindIssueToggles();

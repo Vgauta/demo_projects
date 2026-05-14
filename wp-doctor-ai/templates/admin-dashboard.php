@@ -97,7 +97,7 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
             <div class="wpda-rescue-box"><?php esc_html_e('Optional advanced explanations can use Rescue Credits when AI features are enabled. Basic diagnostics remain available without credits.', 'wp-doctor-ai'); ?></div>
             <h3><?php esc_html_e('Premium plan', 'wp-doctor-ai'); ?></h3>
             <p><strong><?php esc_html_e('Current plan:', 'wp-doctor-ai'); ?></strong> <?php echo esc_html($data['plan']); ?></p>
-            <p><?php esc_html_e('One-click guided solutions are premium-only and always start in safe preview mode. They do not automatically disable plugins or edit files.', 'wp-doctor-ai'); ?></p>
+            <p><?php esc_html_e('One-click guided solutions are premium-only. Duplicate-script issues can be fixed automatically with a reversible WordPress dequeue mitigation; other issue types receive safe AI guidance without destructive file edits.', 'wp-doctor-ai'); ?></p>
             <?php if ($data['checkout_url']) : ?>
                 <p><a class="button button-primary" href="<?php echo esc_url($data['checkout_url']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Upgrade checkout', 'wp-doctor-ai'); ?></a></p>
             <?php else : ?>

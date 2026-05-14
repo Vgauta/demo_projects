@@ -60,6 +60,7 @@ final class Admin
                 'explaining' => esc_html__('Generating explanation…', 'wp-doctor-ai'),
                 'solving' => esc_html__('Working on one-click solution…', 'wp-doctor-ai'),
                 'reloadToVerify' => esc_html__('Reload this page or run another scan to verify the fix.', 'wp-doctor-ai'),
+                'autoRescan' => esc_html__('Reloading now so WP Doctor AI can rescan and remove the fixed issue from the report.', 'wp-doctor-ai'),
             ),
             'defaultLanguage' => sanitize_text_field($settings['language'] ?? 'en'),
             'isPremium' => $this->container->licensing()->is_premium(),

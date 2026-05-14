@@ -121,7 +121,7 @@ final class AiManager
         return array(
             'needs_api_key' => false,
             'message' => __('AI safe solution plan generated. Review it before making changes.', 'wp-doctor-ai'),
-            'steps' => $this->split_steps($text),
+            'steps' => $this->complete_solution_steps($this->split_steps($text), $issue),
         );
     }
 
@@ -200,7 +200,7 @@ final class AiManager
                 ),
                 'generationConfig' => array(
                     'temperature' => 0.2,
-                    'maxOutputTokens' => 1600,
+                    'maxOutputTokens' => 2200,
                 ),
             )),
         ));
@@ -246,6 +246,25 @@ final class AiManager
         ));
 
         return trim($text . "\n\n" . __('WP Doctor AI detected details:', 'wp-doctor-ai') . "\n- " . implode("\n- ", $details));
+    }
+
+    private function complete_solution_steps(array $steps, array $issue): array
+    {
+        $steps = array_values(array_filter(array_map('sanitize_textarea_field', $steps)));
+        $last = trim((string) end($steps));
+        $looks_cut_off = '' === $last || preg_match('#[/,:;\-]$#', $last) || count($steps) < 3;
+
+        if (! $looks_cut_off) {
+            return $steps;
+        }
+
+        $fallbacks = array(
+            sprintf(__('Confirm the detected issue type is still present before changing anything: %s.', 'wp-doctor-ai'), sanitize_key($issue['issue_type'] ?? 'issue')),
+            sanitize_textarea_field((string) ($issue['suggested_fix'] ?? __('Apply the safest reversible mitigation available for this issue.', 'wp-doctor-ai'))),
+            __('Run WP Doctor AI again after the change. The fix is successful only when the issue disappears from the new scan.', 'wp-doctor-ai'),
+        );
+
+        return array_values(array_unique(array_merge($steps, $fallbacks)));
     }
 
     private function split_steps(string $text): array

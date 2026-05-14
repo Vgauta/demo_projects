@@ -48,15 +48,15 @@ Premium AI explanations and solution plans use the tested Gemini model locked in
 
 = Pro add-on =
 
-WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini-generated explanations, one-click AI solution plans with safe automatic duplicate-script mitigation after reload, and custom AI language requests. The free plugin remains useful without Pro; static explanation maps are used only as the free/offline fallback.
+WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini-generated explanations, one-click AI solution plans with safe automatic duplicate-script mitigation and automatic rescan verification, and custom AI language requests. The free plugin remains useful without Pro; static explanation maps are used only as the free/offline fallback.
 
 = Rescue Credits =
 
-WP Doctor AI includes a free scan allowance and an architecture for optional Rescue Credits. Raw diagnostic scans are not charged credits. Premium sites receive unlimited scans. Credits are intended only for advanced optional features such as deeper AI explanations, summaries, translations, printable reports, or developer reports when those integrations are enabled. Premium one-click guided solutions are gated behind a premium license and start in safe preview mode only.
+WP Doctor AI includes a free scan allowance and an architecture for optional Rescue Credits. Raw diagnostic scans are not charged credits. Premium sites receive unlimited scans. Credits are intended only for advanced optional features such as deeper AI explanations, summaries, translations, printable reports, or developer reports when those integrations are enabled. Premium one-click guided solutions are gated behind a premium license. Duplicate-script issues can activate a reversible automatic mitigation; other issue types stay in safe preview mode.
 
 = Privacy and external services =
 
-The plugin works without AI APIs. No external AI provider is contacted by default. Premium AI one-click solution plans with safe automatic duplicate-script mitigation after reload can use a Google AI Studio / Gemini API key entered by the administrator. When enabled, the plugin sends only structured issue data needed to generate explanations or safe solution plans.
+The plugin works without AI APIs. No external AI provider is contacted by default. Premium AI one-click solution plans with safe automatic duplicate-script mitigation and automatic rescan verification can use a Google AI Studio / Gemini API key entered by the administrator. When enabled, the plugin sends only structured issue data needed to generate explanations or safe solution plans.
 
 = Freemium positioning =
 
@@ -82,7 +82,7 @@ The MVP can detect JavaScript and AJAX problems that may affect WooCommerce page
 
 = Does it require AI APIs? =
 
-No. The core plugin works without AI APIs. Diagnostics are deterministic and run inside WordPress and the browser session. Premium one-click AI solution plans with safe automatic duplicate-script mitigation after reload require a Google AI Studio API key. If the key is missing, WP Doctor AI tells the admin to add the key first instead of pretending AI fixes are available.
+No. The core plugin works without AI APIs. Diagnostics are deterministic and run inside WordPress and the browser session. Premium one-click AI solution plans with safe automatic duplicate-script mitigation and automatic rescan verification require a Google AI Studio API key. If the key is missing, WP Doctor AI tells the admin to add the key first instead of pretending AI fixes are available.
 
 = How do I get a Google AI Studio API key? =
 

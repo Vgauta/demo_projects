@@ -178,7 +178,6 @@ final class RestController
         }
 
         $plan = $this->container->ai()->solution_plan($issue, $language);
-        $safe_fix = $this->container->fixes()->apply_safe_fix($issue);
 
         if (! empty($plan['needs_api_key'])) {
             return rest_ensure_response(array(
@@ -186,14 +185,31 @@ final class RestController
                 'needs_api_key' => true,
                 'message' => $plan['message'],
                 'safe_steps' => array(),
+                'applied_fix' => array(
+                    'applied' => false,
+                    'reload_required' => false,
+                    'message' => __('No automatic fix was applied because the AI API key is required first.', 'wp-doctor-ai'),
+                ),
+            ));
+        }
+
+        $safe_fix = $this->container->fixes()->apply_safe_fix($issue);
+
+        if (! empty($safe_fix['applied'])) {
+            return rest_ensure_response(array(
+                'premium_required' => false,
+                'needs_api_key' => false,
+                'message' => $safe_fix['message'],
                 'applied_fix' => $safe_fix,
+                'safe_steps' => array(),
+                'reload_url' => add_query_arg('wpda_autoscan', '1', wp_get_referer() ?: admin_url('admin.php?page=wp-doctor-ai')),
             ));
         }
 
         return rest_ensure_response(array(
             'premium_required' => false,
             'needs_api_key' => false,
-            'message' => $safe_fix['applied'] ? $safe_fix['message'] : ($plan['message'] ?: $translations->translate('solution_preview_ready', $language)),
+            'message' => $plan['message'] ?: $translations->translate('solution_preview_ready', $language),
             'applied_fix' => $safe_fix,
             'safe_steps' => $plan['steps'] ?: array_values(array_filter(array(
                 sanitize_text_field($issue['probable_cause'] ?? ''),

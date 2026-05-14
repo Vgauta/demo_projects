@@ -83,6 +83,7 @@ final class DetectionEngine
             if (! $key) {
                 continue;
             }
+            $script['wpda_canonical_src'] = $key;
             $seen[$key][] = $script;
         }
         foreach ($seen as $key => $items) {
@@ -157,8 +158,19 @@ final class DetectionEngine
 
     private function normalize_script_key(string $src): string
     {
-        $src = strtok($src, '?') ?: $src;
-        return strtolower(basename($src));
+        $src = trim(remove_query_arg(array('ver', 'version'), $src));
+        if ('' === $src) {
+            return '';
+        }
+
+        $path = wp_parse_url($src, PHP_URL_PATH);
+        if (! $path) {
+            return '';
+        }
+
+        $host = (string) wp_parse_url($src, PHP_URL_HOST);
+
+        return sanitize_text_field(strtolower($host . '/' . ltrim($path, '/')));
     }
 
     private function guess_plugin(string $value): string
