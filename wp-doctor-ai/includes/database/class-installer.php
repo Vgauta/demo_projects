@@ -77,7 +77,7 @@ final class Installer
             'ai_enabled' => false,
             'ai_provider' => 'none',
             'google_ai_studio_api_key' => '',
-            'gemini_model' => 'gemini-2.5-flash',
+            'gemini_model' => 'gemini-2.0-flash',
             'language' => 'en',
             'telemetry' => false,
             'safe_mode' => false,

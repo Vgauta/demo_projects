@@ -94,13 +94,12 @@ final class Admin
         $settings = is_array($settings) ? $settings : array();
         $posted = wp_unslash($_POST);
         $api_key = isset($posted['google_ai_studio_api_key']) ? sanitize_text_field((string) $posted['google_ai_studio_api_key']) : '';
-        $model = isset($posted['gemini_model']) ? sanitize_text_field((string) $posted['gemini_model']) : 'gemini-2.5-flash';
         $language = isset($posted['language']) ? sanitize_text_field((string) $posted['language']) : 'en';
 
         $settings['ai_enabled'] = '' !== $api_key;
         $settings['ai_provider'] = '' !== $api_key ? 'gemini' : 'none';
         $settings['google_ai_studio_api_key'] = $api_key;
-        $settings['gemini_model'] = $model ?: 'gemini-2.5-flash';
+        $settings['gemini_model'] = 'gemini-2.0-flash';
         $settings['language'] = $language ?: 'en';
 
         update_option('wp_doctor_ai_settings', $settings);

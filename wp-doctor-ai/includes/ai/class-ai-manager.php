@@ -48,9 +48,7 @@ final class AiManager
 
     public function model(): string
     {
-        $settings = $this->settings();
-        $model = sanitize_text_field((string) ($settings['gemini_model'] ?? 'gemini-2.5-flash'));
-        return $model ?: 'gemini-2.5-flash';
+        return 'gemini-2.0-flash';
     }
 
     public function providers(): array
@@ -83,7 +81,7 @@ final class AiManager
         if ($this->has_api_key()) {
             $text = $this->gemini_request($this->build_explanation_prompt($issue, $mode, $language));
             if ($text) {
-                return $text;
+                return $this->ensure_complete_explanation($text, $issue);
             }
 
             return $this->last_error ? sprintf(__('AI did not return an explanation. Gemini said: %s', 'wp-doctor-ai'), $this->last_error) : __('AI did not return an explanation. Check your Google AI Studio API key, quota, and model.', 'wp-doctor-ai');
@@ -149,7 +147,7 @@ final class AiManager
         );
         $instruction = $mode_instructions[$mode] ?? $mode_instructions['beginner'];
 
-        return 'You are WP Doctor AI. Write an AI-generated explanation in ' . $language . ' for this audience mode: ' . $mode . '. ' . $instruction . ' Use only the deterministic WordPress issue JSON below. Do not invent plugins, files, or causes not present in the data. Explain what the error means, likely impact, and safe next steps. Do not claim you changed the website. Issue JSON: ' . wp_json_encode($issue);
+        return 'You are WP Doctor AI. Write in ' . $language . '. Audience mode: ' . $mode . '. ' . $instruction . ' IMPORTANT: Do not greet the user. Do not say only that you found something. Start directly with the issue. Use only the deterministic WordPress issue JSON below. Return a complete explanation with these exact labels: Issue, What it means, Why it matters, Likely cause, Safe next steps. Mention the issue_type and affected_plugin if present. Do not invent plugins, files, or causes not present in the data. Do not claim you changed the website. Write 120 to 220 words. Issue JSON: ' . wp_json_encode($issue);
     }
 
     private function build_solution_prompt(array $issue, string $language): string
@@ -168,8 +166,8 @@ final class AiManager
         $this->last_error = '';
         $models = array_values(array_unique(array_filter(array(
             $this->model(),
-            'gemini-2.5-flash',
             'gemini-2.0-flash',
+            'gemini-2.5-flash',
         ))));
 
         foreach ($models as $model) {
@@ -202,7 +200,7 @@ final class AiManager
                 ),
                 'generationConfig' => array(
                     'temperature' => 0.2,
-                    'maxOutputTokens' => 900,
+                    'maxOutputTokens' => 1600,
                 ),
             )),
         ));
@@ -227,6 +225,27 @@ final class AiManager
         }
 
         return sanitize_textarea_field((string) $text);
+    }
+
+
+    private function ensure_complete_explanation(string $text, array $issue): string
+    {
+        $plain = trim(wp_strip_all_tags($text));
+        $looks_incomplete = strlen($plain) < 220 || preg_match('/(what I found:?|let\'s talk about what|don\'t worry,? I\'ll)$/i', $plain);
+
+        if (! $looks_incomplete) {
+            return $text;
+        }
+
+        $details = array_filter(array(
+            'Issue type: ' . sanitize_text_field((string) ($issue['issue_type'] ?? 'unknown')),
+            'Severity: ' . sanitize_text_field((string) ($issue['severity'] ?? 'unknown')),
+            'Affected plugin: ' . sanitize_text_field((string) ($issue['affected_plugin'] ?? 'unknown')),
+            'Probable cause: ' . sanitize_textarea_field((string) ($issue['probable_cause'] ?? '')),
+            'Safe next step: ' . sanitize_textarea_field((string) ($issue['suggested_fix'] ?? '')),
+        ));
+
+        return trim($text . "\n\n" . __('WP Doctor AI detected details:', 'wp-doctor-ai') . "\n- " . implode("\n- ", $details));
     }
 
     private function split_steps(string $text): array
