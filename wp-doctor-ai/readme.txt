@@ -97,7 +97,7 @@ No external service is contacted by default. Diagnostic data is stored locally i
 
 = How do I activate Pro features? =
 
-Install and activate the separate WP Doctor AI Pro add-on while the free plugin is active. Pro forces the license layer to the pro plan, unlocks unlimited scans, and enables premium AI solution plans after you add a Google AI Studio API key.
+Install and activate the separate WP Doctor AI Pro add-on while the free plugin is active. In this build, no separate WP Doctor AI license key is required: Pro activation locally marks the plan as pro, unlocks unlimited scans, and enables premium AI solution plans after you add a Google AI Studio API key.
 
 = How do Rescue Credits work? =
 

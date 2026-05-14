@@ -14,9 +14,10 @@ WP Doctor AI Pro is the premium add-on for the free WP Doctor AI plugin.
 
 1. Install and activate the free `wp-doctor-ai` plugin first.
 2. Install and activate `wp-doctor-ai-pro`.
-3. Open **WP Doctor AI > Premium AI setup**.
-4. Add a Google AI Studio API key.
-5. Run a scan, open an issue, and click **One-click solution**.
+3. Pro unlocks automatically after activation; no separate WP Doctor AI license key is needed in this build.
+4. Open **WP Doctor AI > Premium AI setup**.
+5. Add a Google AI Studio API key for AI one-click solution plans.
+6. Run a scan, open an issue, and click **One-click solution**.
 
 ## Google AI Studio API key
 

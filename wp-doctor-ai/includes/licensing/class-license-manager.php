@@ -15,6 +15,10 @@ final class LicenseManager
 {
     public function plan(): string
     {
+        if (defined('WP_DOCTOR_AI_PRO_ACTIVE') && WP_DOCTOR_AI_PRO_ACTIVE) {
+            return 'pro';
+        }
+
         if (defined('WP_DOCTOR_AI_PREMIUM') && WP_DOCTOR_AI_PREMIUM) {
             return 'premium';
         }

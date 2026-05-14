@@ -21,8 +21,38 @@ if (! defined('ABSPATH')) {
 
 define('WP_DOCTOR_AI_PRO_VERSION', '1.0.0');
 define('WP_DOCTOR_AI_PRO_FILE', __FILE__);
+define('WP_DOCTOR_AI_PRO_ACTIVE', true);
 
+register_activation_hook(__FILE__, 'wp_doctor_ai_pro_activate');
+register_deactivation_hook(__FILE__, 'wp_doctor_ai_pro_deactivate');
 add_action('plugins_loaded', 'wp_doctor_ai_pro_boot', 0);
+
+/**
+ * Store a pro plan marker so the base plugin unlocks Pro even if filters are unavailable.
+ */
+function wp_doctor_ai_pro_activate(): void
+{
+    $license = get_option('wp_doctor_ai_license', array());
+    $license = is_array($license) ? $license : array();
+    $license['plan'] = 'pro';
+    $license['source'] = 'wp_doctor_ai_pro';
+    update_option('wp_doctor_ai_license', $license);
+}
+
+/**
+ * Remove only the Pro marker created by this add-on on deactivation.
+ */
+function wp_doctor_ai_pro_deactivate(): void
+{
+    $license = get_option('wp_doctor_ai_license', array());
+    $license = is_array($license) ? $license : array();
+
+    if ('wp_doctor_ai_pro' === ($license['source'] ?? '')) {
+        $license['plan'] = 'free';
+        unset($license['source']);
+        update_option('wp_doctor_ai_license', $license);
+    }
+}
 
 /**
  * Enable pro capabilities before the base WP Doctor AI plugin boots.
@@ -33,6 +63,8 @@ function wp_doctor_ai_pro_boot(): void
         add_action('admin_notices', 'wp_doctor_ai_pro_missing_base_notice');
         return;
     }
+
+    wp_doctor_ai_pro_activate();
 
     add_filter('wp_doctor_ai_license_plan', 'wp_doctor_ai_pro_license_plan');
     add_filter('wp_doctor_ai_feature_enabled', 'wp_doctor_ai_pro_feature_enabled', 10, 3);

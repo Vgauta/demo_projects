@@ -26,9 +26,10 @@ AI solution plans use structured issue data already detected by WP Doctor AI. Th
 
 1. Install and activate the free `wp-doctor-ai` plugin.
 2. Upload and activate `wp-doctor-ai-pro`.
-3. Open **WP Doctor AI** in the WordPress admin.
-4. Add your Google AI Studio API key in **Premium AI setup**.
-5. Run a scan, open an issue, and click **One-click solution**.
+3. Pro unlocks automatically after activation; no separate WP Doctor AI license key is needed in this build.
+4. Open **WP Doctor AI** in the WordPress admin.
+5. Add your Google AI Studio API key in **Premium AI setup** for AI one-click solution plans.
+6. Run a scan, open an issue, and click **One-click solution**.
 
 == Frequently Asked Questions ==
 
@@ -39,6 +40,10 @@ No. WP Doctor AI Pro is an add-on. The free WP Doctor AI plugin must be installe
 = Does Pro include unlimited scans? =
 
 Yes. When Pro is active, WP Doctor AI treats the site as a pro plan and manual scans are unlimited.
+
+= Does Pro need a license key? =
+
+No separate WP Doctor AI license key is needed in this build. Activating the Pro add-on unlocks the pro plan locally. A future licensing server can be added later if you want per-customer license validation.
 
 = Does Pro need a Google AI Studio API key? =
 
