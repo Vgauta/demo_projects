@@ -20,6 +20,7 @@ final class AiManager
     private $credits;
     private $logger;
     private $licensing;
+    private $last_error = '';
 
     public function __construct(CreditManager $credits, Logger $logger, LicenseManager $licensing)
     {
@@ -48,8 +49,8 @@ final class AiManager
     public function model(): string
     {
         $settings = $this->settings();
-        $model = sanitize_text_field((string) ($settings['gemini_model'] ?? 'gemini-1.5-flash'));
-        return $model ?: 'gemini-1.5-flash';
+        $model = sanitize_text_field((string) ($settings['gemini_model'] ?? 'gemini-2.5-flash'));
+        return $model ?: 'gemini-2.5-flash';
     }
 
     public function providers(): array
@@ -86,6 +87,11 @@ final class AiManager
         return __('AI adapter is configured but no provider callback returned a summary. Deterministic recommendations are still available.', 'wp-doctor-ai');
     }
 
+    public function last_error(): string
+    {
+        return $this->last_error;
+    }
+
     public function solution_plan(array $issue, string $language): array
     {
         if (! $this->has_api_key()) {
@@ -104,7 +110,7 @@ final class AiManager
         if (! $text) {
             return array(
                 'needs_api_key' => false,
-                'message' => __('AI did not return a solution plan. Keep using the deterministic safe recommendation.', 'wp-doctor-ai'),
+                'message' => $this->last_error ? sprintf(__('AI did not return a solution plan. Gemini said: %s', 'wp-doctor-ai'), $this->last_error) : __('AI did not return a solution plan. Keep using the deterministic safe recommendation.', 'wp-doctor-ai'),
                 'steps' => array(),
             );
         }
@@ -142,13 +148,33 @@ final class AiManager
     {
         $api_key = $this->api_key();
         if (! $api_key) {
+            $this->last_error = __('Missing Google AI Studio API key.', 'wp-doctor-ai');
             return '';
         }
 
+        $this->last_error = '';
+        $models = array_values(array_unique(array_filter(array(
+            $this->model(),
+            'gemini-2.5-flash',
+            'gemini-2.0-flash',
+        ))));
+
+        foreach ($models as $model) {
+            $text = $this->gemini_model_request($prompt, $api_key, $model);
+            if ($text) {
+                return $text;
+            }
+        }
+
+        return '';
+    }
+
+    private function gemini_model_request(string $prompt, string $api_key, string $model): string
+    {
         $endpoint = add_query_arg(
             'key',
             $api_key,
-            'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($this->model()) . ':generateContent'
+            'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent'
         );
 
         $response = wp_remote_post($endpoint, array(
@@ -163,18 +189,29 @@ final class AiManager
                 ),
                 'generationConfig' => array(
                     'temperature' => 0.2,
-                    'maxOutputTokens' => 700,
+                    'maxOutputTokens' => 900,
                 ),
             )),
         ));
 
         if (is_wp_error($response)) {
-            $this->logger->info('Gemini request failed', array('error' => $response->get_error_message()));
+            $this->last_error = $response->get_error_message();
+            $this->logger->info('Gemini request failed', array('error' => $this->last_error, 'model' => $model));
             return '';
         }
 
         $body = json_decode((string) wp_remote_retrieve_body($response), true);
+        $code = (int) wp_remote_retrieve_response_code($response);
+        if ($code >= 400) {
+            $this->last_error = sanitize_text_field((string) ($body['error']['message'] ?? wp_remote_retrieve_response_message($response)));
+            $this->logger->info('Gemini request rejected', array('error' => $this->last_error, 'model' => $model, 'code' => $code));
+            return '';
+        }
+
         $text = $body['candidates'][0]['content']['parts'][0]['text'] ?? '';
+        if (! $text) {
+            $this->last_error = sanitize_text_field((string) ($body['promptFeedback']['blockReason'] ?? __('Empty Gemini response.', 'wp-doctor-ai')));
+        }
 
         return sanitize_textarea_field((string) $text);
     }

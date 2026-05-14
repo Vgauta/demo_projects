@@ -58,6 +58,7 @@ final class Plugin
         (new Admin($this->container))->hooks();
         (new RestController($this->container))->hooks();
         (new BrowserCollector($this->container))->hooks();
+        $this->container->fixes()->hooks();
 
         add_action('wp_doctor_ai_subscription_refill', array($this->container->credits(), 'run_subscription_refill'));
         if (! wp_next_scheduled('wp_doctor_ai_subscription_refill')) {

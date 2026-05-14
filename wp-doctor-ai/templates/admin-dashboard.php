@@ -13,7 +13,7 @@ $wpda_settings = get_option('wp_doctor_ai_settings', array());
 $wpda_settings = is_array($wpda_settings) ? $wpda_settings : array();
 $wpda_language = sanitize_text_field($wpda_settings['language'] ?? 'en');
 $wpda_api_key = sanitize_text_field($wpda_settings['google_ai_studio_api_key'] ?? '');
-$wpda_model = sanitize_text_field($wpda_settings['gemini_model'] ?? 'gemini-1.5-flash');
+$wpda_model = sanitize_text_field($wpda_settings['gemini_model'] ?? 'gemini-2.5-flash');
 $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', 'ja', 'fr'), true) ? '' : $wpda_language;
 ?>
 <div class="wrap wpda-shell" id="wp-doctor-ai-app">
@@ -117,7 +117,7 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
                 </label>
                 <label>
                     <span><?php esc_html_e('Gemini model', 'wp-doctor-ai'); ?></span>
-                    <input type="text" name="gemini_model" value="<?php echo esc_attr($wpda_model); ?>" />
+                    <input type="text" name="gemini_model" value="<?php echo esc_attr($wpda_model); ?>" placeholder="gemini-2.5-flash" />
                 </label>
                 <label>
                     <span><?php esc_html_e('Default language', 'wp-doctor-ai'); ?></span>

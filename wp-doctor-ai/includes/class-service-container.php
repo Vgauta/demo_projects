@@ -12,6 +12,7 @@ use WPDoctorAI\Analyzers\ExplanationEngine;
 use WPDoctorAI\Credits\CreditManager;
 use WPDoctorAI\Database\Repository;
 use WPDoctorAI\Detectors\DetectionEngine;
+use WPDoctorAI\Fixes\FixManager;
 use WPDoctorAI\Licensing\LicenseManager;
 use WPDoctorAI\Logs\Logger;
 use WPDoctorAI\Scanners\ScannerEngine;
@@ -36,6 +37,7 @@ final class ServiceContainer
         $this->services['explanations'] = new ExplanationEngine($this->translations(), $this->ai());
         $this->services['detector'] = new DetectionEngine();
         $this->services['scanner'] = new ScannerEngine($this->detector(), $this->repository(), $this->logger());
+        $this->services['fixes'] = new FixManager();
     }
 
     public function repository(): Repository
@@ -85,6 +87,11 @@ final class ServiceContainer
     public function licensing(): LicenseManager
     {
         return $this->service('licensing');
+    }
+
+    public function fixes(): FixManager
+    {
+        return $this->service('fixes');
     }
 
     /**

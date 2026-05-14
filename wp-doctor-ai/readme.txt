@@ -48,7 +48,7 @@ Premium AI solution plans can request any language supported by the selected AI 
 
 = Pro add-on =
 
-WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini-generated explanations, one-click AI solution plans, and custom AI language requests. The free plugin remains useful without Pro; static explanation maps are used only as the free/offline fallback.
+WP Doctor AI Pro is a separate premium add-on. When installed and active with the free plugin, it unlocks unlimited scans, Google AI Studio / Gemini-generated explanations, one-click AI solution plans with safe automatic duplicate-script mitigation, and custom AI language requests. The free plugin remains useful without Pro; static explanation maps are used only as the free/offline fallback.
 
 = Rescue Credits =
 
@@ -56,7 +56,7 @@ WP Doctor AI includes a free scan allowance and an architecture for optional Res
 
 = Privacy and external services =
 
-The plugin works without AI APIs. No external AI provider is contacted by default. Premium AI one-click solution plans can use a Google AI Studio / Gemini API key entered by the administrator. When enabled, the plugin sends only structured issue data needed to generate explanations or safe solution plans.
+The plugin works without AI APIs. No external AI provider is contacted by default. Premium AI one-click solution plans with safe automatic duplicate-script mitigation can use a Google AI Studio / Gemini API key entered by the administrator. When enabled, the plugin sends only structured issue data needed to generate explanations or safe solution plans.
 
 = Freemium positioning =
 
@@ -82,7 +82,7 @@ The MVP can detect JavaScript and AJAX problems that may affect WooCommerce page
 
 = Does it require AI APIs? =
 
-No. The core plugin works without AI APIs. Diagnostics are deterministic and run inside WordPress and the browser session. Premium one-click AI solution plans require a Google AI Studio API key. If the key is missing, WP Doctor AI tells the admin to add the key first instead of pretending AI fixes are available.
+No. The core plugin works without AI APIs. Diagnostics are deterministic and run inside WordPress and the browser session. Premium one-click AI solution plans with safe automatic duplicate-script mitigation require a Google AI Studio API key. If the key is missing, WP Doctor AI tells the admin to add the key first instead of pretending AI fixes are available.
 
 = How do I get a Google AI Studio API key? =
 

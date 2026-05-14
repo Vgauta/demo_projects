@@ -89,7 +89,9 @@
         holder.setAttribute('data-last-solution', '1');
         request('/solution', { method: 'POST', body: JSON.stringify({ issue: issue, language: selectedLanguage() }) }).then(function (data) {
           var title = data.needs_api_key ? (api.strings && api.strings.apiKeyRequired ? api.strings.apiKeyRequired : 'API key required') : (data.premium_required ? (api.strings && api.strings.premiumRequired ? api.strings.premiumRequired : 'Premium required') : (api.strings && api.strings.oneClickSolution ? api.strings.oneClickSolution : 'One-click solution'));
-          var lines = [data.message, data.payment_note].concat(data.safe_steps || []);
+          var lines = [data.message, data.payment_note];
+          if (data.applied_fix && data.applied_fix.message && data.applied_fix.message !== data.message) lines.push(data.applied_fix.message);
+          lines = lines.concat(data.safe_steps || []);
           writeMessage(holder, 'wpda-solution', title, lines, data.checkout_url || '');
         }).finally(function () {
           button.disabled = false;

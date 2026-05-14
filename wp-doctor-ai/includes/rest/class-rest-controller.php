@@ -178,6 +178,7 @@ final class RestController
         }
 
         $plan = $this->container->ai()->solution_plan($issue, $language);
+        $safe_fix = $this->container->fixes()->apply_safe_fix($issue);
 
         if (! empty($plan['needs_api_key'])) {
             return rest_ensure_response(array(
@@ -185,13 +186,15 @@ final class RestController
                 'needs_api_key' => true,
                 'message' => $plan['message'],
                 'safe_steps' => array(),
+                'applied_fix' => $safe_fix,
             ));
         }
 
         return rest_ensure_response(array(
             'premium_required' => false,
             'needs_api_key' => false,
-            'message' => $plan['message'] ?: $translations->translate('solution_preview_ready', $language),
+            'message' => $safe_fix['applied'] ? $safe_fix['message'] : ($plan['message'] ?: $translations->translate('solution_preview_ready', $language)),
+            'applied_fix' => $safe_fix,
             'safe_steps' => $plan['steps'] ?: array_values(array_filter(array(
                 sanitize_text_field($issue['probable_cause'] ?? ''),
                 sanitize_text_field($issue['suggested_fix'] ?? ''),

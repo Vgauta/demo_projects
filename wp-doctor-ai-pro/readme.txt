@@ -8,19 +8,19 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Premium add-on for WP Doctor AI that unlocks unlimited scans and Google AI Studio / Gemini one-click solution plans.
+Premium add-on for WP Doctor AI that unlocks unlimited scans and Google AI Studio / Gemini one-click solution plans with safe automatic duplicate-script mitigation.
 
 == Description ==
 
 WP Doctor AI Pro is the premium add-on for the free WP Doctor AI diagnostics plugin. It does not replace the deterministic scanner. Instead, it unlocks premium workflows in the base plugin:
 
 * Unlimited manual scans.
-* Premium one-click AI solution plans.
+* Premium one-click AI solution plans with safe automatic duplicate-script mitigation.
 * Google AI Studio / Gemini API key support.
 * Custom AI language requests for languages supported by the AI provider.
 * Premium checkout/account links for Starline Infotech.
 
-AI explanations and solution plans use structured issue data already detected by WP Doctor AI. The AI response is a safe, review-first plan. It does not automatically edit files, disable plugins, modify themes, or perform destructive operations.
+AI explanations and solution plans use structured issue data already detected by WP Doctor AI. The AI response is a safe, review-first plan. It does not edit core files, disable plugins, modify themes, or perform destructive operations. For duplicate-script issues, Pro can safely enable a reversible dequeue mitigation that keeps the first matching script and prevents later duplicates from printing.
 
 == Installation ==
 
@@ -28,7 +28,7 @@ AI explanations and solution plans use structured issue data already detected by
 2. Upload and activate `wp-doctor-ai-pro`.
 3. Pro unlocks automatically after activation; no separate WP Doctor AI license key is needed in this build.
 4. Open **WP Doctor AI** in the WordPress admin.
-5. Add your Google AI Studio API key in **Premium AI setup** for AI one-click solution plans.
+5. Add your Google AI Studio API key in **Premium AI setup** for AI one-click solution plans with safe automatic duplicate-script mitigation.
 6. Run a scan, open an issue, and click **One-click solution**.
 
 == Frequently Asked Questions ==
@@ -47,11 +47,11 @@ No separate WP Doctor AI license key is needed in this build. Activating the Pro
 
 = Does Pro need a Google AI Studio API key? =
 
-Yes, premium AI one-click solution plans require an administrator-provided Google AI Studio / Gemini API key. If the key is missing, WP Doctor AI asks the admin to add it first.
+Yes, premium AI one-click solution plans with safe automatic duplicate-script mitigation require an administrator-provided Google AI Studio / Gemini API key. If the key is missing, WP Doctor AI asks the admin to add it first.
 
 = Does AI really fix the website automatically? =
 
-No. Pro generates a safe solution plan. It does not automatically apply risky changes.
+Pro can apply safe reversible mitigations where WP Doctor AI has a deterministic fix, such as duplicate-script de-duplication. It does not edit core files, disable plugins, modify themes, or apply risky changes.
 
 == Changelog ==
 
