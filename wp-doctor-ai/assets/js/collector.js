@@ -12,7 +12,8 @@
     ajax_failures: [],
     scripts: [],
     jquery_markers: {},
-    elementor_events: []
+    elementor_events: [],
+    performance: {}
   };
 
   function pushError(message, source, lineno, colno, error) {
@@ -75,6 +76,64 @@
     return originalSend.apply(this, arguments);
   };
 
+  function inspectPerformance() {
+    var perf = window.performance;
+    if (!perf || !perf.getEntriesByType) return;
+
+    var nav = (perf.getEntriesByType('navigation') || [])[0];
+    var paints = perf.getEntriesByType('paint') || [];
+    var firstContentfulPaint = paints.filter(function (entry) { return entry.name === 'first-contentful-paint'; })[0];
+    var resources = (perf.getEntriesByType('resource') || []).map(function (entry) {
+      return {
+        name: entry.name || '',
+        initiator_type: entry.initiatorType || '',
+        duration: Math.round(entry.duration || 0),
+        transfer_size: Math.round(entry.transferSize || 0),
+        encoded_body_size: Math.round(entry.encodedBodySize || 0),
+        render_blocking_status: entry.renderBlockingStatus || ''
+      };
+    }).filter(function (entry) {
+      return entry.transfer_size > 150000 || entry.duration > 1000 || entry.render_blocking_status === 'blocking';
+    }).slice(0, 25);
+
+    payload.performance = {
+      ttfb: nav ? Math.round(nav.responseStart || 0) : 0,
+      dom_content_loaded: nav ? Math.round(nav.domContentLoadedEventEnd || 0) : 0,
+      load_time: nav ? Math.round(nav.loadEventEnd || 0) : 0,
+      first_contentful_paint: firstContentfulPaint ? Math.round(firstContentfulPaint.startTime || 0) : 0,
+      largest_contentful_paint: payload.performance.largest_contentful_paint || 0,
+      cumulative_layout_shift: payload.performance.cumulative_layout_shift || 0,
+      slow_resources: resources
+    };
+  }
+
+  if ('PerformanceObserver' in window) {
+    try {
+      var lcpObserver = new PerformanceObserver(function (list) {
+        var entries = list.getEntries();
+        var last = entries[entries.length - 1];
+        if (last) payload.performance.largest_contentful_paint = Math.round(last.startTime || 0);
+      });
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+    } catch (ignore) {}
+
+    try {
+      var cls = 0;
+      var clsObserver = new PerformanceObserver(function (list) {
+        list.getEntries().forEach(function (entry) {
+          if (!entry.hadRecentInput) cls += entry.value || 0;
+        });
+        payload.performance.cumulative_layout_shift = Math.round(cls * 1000) / 1000;
+      });
+      clsObserver.observe({ type: 'layout-shift', buffered: true });
+    } catch (ignoreCls) {}
+  }
+
+  function hasPerformanceProblem() {
+    var perf = payload.performance || {};
+    return perf.ttfb > 800 || perf.first_contentful_paint > 1800 || perf.largest_contentful_paint > 2500 || perf.cumulative_layout_shift > 0.1 || (perf.slow_resources && perf.slow_resources.length);
+  }
+
   function inspectElementor() {
     if (/elementor/.test(document.body.className) || window.elementor || window.elementorFrontend) {
       var failedWidgets = Array.prototype.slice.call(document.querySelectorAll('.elementor-widget:not(.elementor-widget-text-editor)')).filter(function (widget) {
@@ -88,8 +147,9 @@
 
   function send() {
     inspectScripts();
+    inspectPerformance();
     inspectElementor();
-    if (!payload.console_errors.length && !payload.ajax_failures.length && !payload.elementor_events.length) {
+    if (!payload.console_errors.length && !payload.ajax_failures.length && !payload.elementor_events.length && !hasPerformanceProblem()) {
       return;
     }
     window.fetch(window.WPDoctorAICollector.restUrl, {

@@ -152,7 +152,7 @@ final class AiManager
 
     private function build_solution_prompt(array $issue, string $language): string
     {
-        return 'You are WP Doctor AI. Create a safe premium one-click solution plan in ' . $language . '. Use only this deterministic WordPress issue JSON. Do not claim you applied a fix. Do not suggest editing core files or destructive actions. Return 3 to 6 concise numbered steps for staging/safe-mode testing and verification. Issue JSON: ' . wp_json_encode($issue);
+        return 'You are WP Doctor AI. Create a safe premium one-click solution plan in ' . $language . '. Use only this deterministic WordPress issue JSON. If the issue_type starts with page_speed_, explain the fix in simple site-owner language and focus on cache, images, fonts, render-blocking CSS/JS, heavy plugins, CDN, and verification in PageSpeed/Core Web Vitals. Do not claim you applied a fix. Do not suggest editing core files or destructive actions. Return 3 to 6 concise numbered steps for staging/safe-mode testing and verification. Issue JSON: ' . wp_json_encode($issue);
     }
 
     private function gemini_request(string $prompt): string

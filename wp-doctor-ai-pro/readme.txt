@@ -1,6 +1,6 @@
 === WP Doctor AI Pro ===
 Contributors: starlineinfotech
-Tags: diagnostics, ai, gemini, troubleshooting, wordpress
+Tags: diagnostics, page speed, core web vitals, ai, troubleshooting
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Premium add-on for WP Doctor AI that unlocks unlimited scans and Google AI Studio / Gemini one-click solution plans with safe automatic duplicate-script mitigation and automatic rescan verification.
+Premium add-on for WP Doctor AI that unlocks unlimited page speed/error scans and Google AI Studio / Gemini one-click solution plans with safe automatic duplicate-script mitigation and automatic rescan verification.
 
 == Description ==
 

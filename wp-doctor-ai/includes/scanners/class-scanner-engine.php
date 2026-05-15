@@ -49,6 +49,7 @@ final class ScannerEngine
         foreach (array('console_errors', 'ajax_failures', 'scripts', 'elementor_events') as $list) {
             $payload[$list] = array_values(array_filter(array_map(array($this, 'sanitize_record'), $payload[$list] ?? array())));
         }
+        $payload['performance'] = is_array($payload['performance'] ?? null) ? $this->sanitize_record($payload['performance']) : array();
         $payload['jquery_markers'] = is_array($payload['jquery_markers'] ?? null) ? array_map('sanitize_text_field', $payload['jquery_markers']) : array();
         return $payload;
     }

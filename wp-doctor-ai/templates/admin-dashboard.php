@@ -20,7 +20,7 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
     <header class="wpda-hero">
         <div>
             <p class="wpda-eyebrow"><?php esc_html_e('WP Doctor AI', 'wp-doctor-ai'); ?></p>
-            <h1><?php esc_html_e('Understand what’s breaking your website.', 'wp-doctor-ai'); ?></h1>
+            <h1><?php esc_html_e('Understand what’s slowing or breaking your website.', 'wp-doctor-ai'); ?></h1>
             <p><?php esc_html_e('Deterministic WordPress diagnostics with optional AI explanations. Raw scans are never charged Rescue Credits.', 'wp-doctor-ai'); ?></p>
         </div>
         <div class="wpda-credit-card">
@@ -38,13 +38,13 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
         <article class="wpda-card"><span><?php esc_html_e('Total Issues', 'wp-doctor-ai'); ?></span><strong data-wpda-total><?php echo esc_html((string) count($data['issues'])); ?></strong></article>
         <article class="wpda-card danger"><span><?php esc_html_e('Critical', 'wp-doctor-ai'); ?></span><strong data-wpda-critical><?php echo esc_html((string) count(array_filter($data['issues'], static function ($issue) { return 'critical' === $issue['severity']; }))); ?></strong></article>
         <article class="wpda-card warning"><span><?php esc_html_e('AJAX Failures', 'wp-doctor-ai'); ?></span><strong data-wpda-ajax><?php echo esc_html((string) count(array_filter($data['issues'], static function ($issue) { return 'ajax_failure' === $issue['issue_type']; }))); ?></strong></article>
-        <article class="wpda-card violet"><span><?php esc_html_e('Elementor Crashes', 'wp-doctor-ai'); ?></span><strong data-wpda-elementor><?php echo esc_html((string) count(array_filter($data['issues'], static function ($issue) { return 'elementor_crash' === $issue['issue_type']; }))); ?></strong></article>
+        <article class="wpda-card violet"><span><?php esc_html_e('Page Speed Issues', 'wp-doctor-ai'); ?></span><strong data-wpda-speed><?php echo esc_html((string) count(array_filter($data['issues'], static function ($issue) { return 0 === strpos($issue['issue_type'], 'page_speed_'); }))); ?></strong></article>
     </section>
 
     <main class="wpda-layout">
         <section class="wpda-panel">
             <div class="wpda-panel-head">
-                <div><h2><?php esc_html_e('Issue Explorer', 'wp-doctor-ai'); ?></h2><p><?php esc_html_e('Filter deterministic issue objects by severity, plugin, type, or affected page.', 'wp-doctor-ai'); ?></p></div>
+                <div><h2><?php esc_html_e('Issue Explorer', 'wp-doctor-ai'); ?></h2><p><?php esc_html_e('Filter deterministic speed and error issues by severity, plugin, type, or affected page.', 'wp-doctor-ai'); ?></p></div>
                 <div class="wpda-panel-actions">
                     <label class="wpda-language-picker">
                         <span><?php esc_html_e('Explanation language', 'wp-doctor-ai'); ?></span>

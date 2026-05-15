@@ -177,7 +177,17 @@
       run.textContent = api.strings && api.strings.scanning ? api.strings.scanning : 'Scanning…';
       var cleanUrl = window.location.href.replace(/([?&])wpda_autoscan=1(&?)/, function (match, prefix, suffix) { return suffix ? prefix : ''; }).replace(/[?&]$/, '');
       var scripts = Array.prototype.slice.call(document.scripts).map(function (script) { return { src: script.src || '', id: script.id || '' }; });
-      request('/scan', { method: 'POST', body: JSON.stringify({ manual: true, page_url: cleanUrl, scripts: scripts, console_errors: [], ajax_failures: [], elementor_events: [] }) }).then(function (data) {
+      var nav = window.performance && window.performance.getEntriesByType ? (window.performance.getEntriesByType('navigation') || [])[0] : null;
+      var paints = window.performance && window.performance.getEntriesByType ? window.performance.getEntriesByType('paint') || [] : [];
+      var fcp = paints.filter(function (entry) { return entry.name === 'first-contentful-paint'; })[0];
+      var performancePayload = {
+        ttfb: nav ? Math.round(nav.responseStart || 0) : 0,
+        dom_content_loaded: nav ? Math.round(nav.domContentLoadedEventEnd || 0) : 0,
+        load_time: nav ? Math.round(nav.loadEventEnd || 0) : 0,
+        first_contentful_paint: fcp ? Math.round(fcp.startTime || 0) : 0,
+        slow_resources: []
+      };
+      request('/scan', { method: 'POST', body: JSON.stringify({ manual: true, page_url: cleanUrl, scripts: scripts, console_errors: [], ajax_failures: [], elementor_events: [], performance: performancePayload }) }).then(function (data) {
         if (data && data.error) {
           window.alert(data.message || 'Scan limit reached.');
           if (data.checkout_url) window.open(data.checkout_url, '_blank', 'noopener');
