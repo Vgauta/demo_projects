@@ -46,10 +46,11 @@ final class ScannerEngine
     private function sanitize_payload(array $payload): array
     {
         $payload['page_url'] = isset($payload['page_url']) ? esc_url_raw($payload['page_url']) : home_url('/');
-        foreach (array('console_errors', 'ajax_failures', 'scripts', 'elementor_events') as $list) {
+        foreach (array('console_errors', 'ajax_failures', 'scripts', 'elementor_events', 'images', 'stylesheets') as $list) {
             $payload[$list] = array_values(array_filter(array_map(array($this, 'sanitize_record'), $payload[$list] ?? array())));
         }
         $payload['performance'] = is_array($payload['performance'] ?? null) ? $this->sanitize_record($payload['performance']) : array();
+        $payload['dom'] = is_array($payload['dom'] ?? null) ? $this->sanitize_record($payload['dom']) : array();
         $payload['jquery_markers'] = is_array($payload['jquery_markers'] ?? null) ? array_map('sanitize_text_field', $payload['jquery_markers']) : array();
         return $payload;
     }

@@ -51,7 +51,7 @@ Yes, premium AI one-click solution plans with safe automatic duplicate-script mi
 
 = Does AI really fix the website automatically? =
 
-Pro can apply safe reversible mitigations where WP Doctor AI has a deterministic fix, such as duplicate-script de-duplication. It does not edit core files, disable plugins, modify themes, or apply risky changes.
+Pro can apply safe reversible mitigations where WP Doctor AI has a deterministic fix, such as duplicate-script de-duplication. It uses runtime WordPress hooks, compatibility checks, debug logging, and rollback metadata; it does not edit core files, disable plugins, modify themes, or apply risky changes.
 
 == Changelog ==
 

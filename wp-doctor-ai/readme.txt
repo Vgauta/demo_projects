@@ -20,7 +20,7 @@ WP Doctor AI does not automatically change files, disable plugins, modify themes
 
 = MVP diagnostics included =
 
-* Core Web Vitals and page speed signals for slow TTFB, FCP, LCP, CLS, and heavy assets.
+* Core Web Vitals and page speed signals for slow TTFB, FCP, LCP, CLS, heavy assets, render-blocking styles, oversized images, lazy-loaded hero images, missing image dimensions, and missing image alt text.
 * JavaScript console error detection.
 * jQuery conflict detection.
 * Duplicate script detection.
@@ -61,7 +61,7 @@ The plugin works without AI APIs. No external AI provider is contacted by defaul
 
 = Freemium positioning =
 
-The free version is intended to provide useful basic diagnostics, issue severity, and limited explanations. Premium-only features, such as one-click guided solution previews, are clearly labeled. The plugin does not use deceptive lock screens, fake urgency, spam notices, or dashboard hijacking.
+The free version is intended to provide useful basic diagnostics, issue severity, and limited explanations for performance, accessibility, and frontend errors. Premium-only features, such as one-click guided solution previews, are clearly labeled. The plugin does not use deceptive lock screens, fake urgency, spam notices, or dashboard hijacking.
 
 == Installation ==
 
@@ -75,7 +75,7 @@ The free version is intended to provide useful basic diagnostics, issue severity
 
 = Does this plugin automatically fix issues? =
 
-No. WP Doctor AI provides diagnostics, explanations, and safe recommendations. The one-click solution button is a premium guided preview and does not automatically edit files, disable plugins, change themes, or perform destructive operations.
+WP Doctor AI never edits core/theme/plugin files or overwrites site functionality. Automatic fixes are limited to reversible runtime mitigations with compatibility checks and rollback; other issues receive safe AI guidance and manual steps.
 
 = Does it support WooCommerce? =
 

@@ -13,7 +13,10 @@
     scripts: [],
     jquery_markers: {},
     elementor_events: [],
-    performance: {}
+    performance: {},
+    images: [],
+    stylesheets: [],
+    dom: {}
   };
 
   function pushError(message, source, lineno, colno, error) {
@@ -28,8 +31,19 @@
   }
 
   window.addEventListener('error', function (event) {
+    if (event.target && event.target !== window && event.target.tagName) {
+      payload.console_errors.push({
+        message: 'Resource failed to load: ' + event.target.tagName.toLowerCase(),
+        source: event.target.src || event.target.href || '',
+        line: '',
+        column: '',
+        stack: '',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
     pushError(event.message, event.filename, event.lineno, event.colno, event.error);
-  });
+  }, true);
 
   window.addEventListener('unhandledrejection', function (event) {
     pushError('Unhandled promise rejection: ' + (event.reason && event.reason.message ? event.reason.message : event.reason), '', '', '', event.reason);
@@ -134,6 +148,53 @@
     return perf.ttfb > 800 || perf.first_contentful_paint > 1800 || perf.largest_contentful_paint > 2500 || perf.cumulative_layout_shift > 0.1 || (perf.slow_resources && perf.slow_resources.length);
   }
 
+  function inspectFrontendOptimization() {
+    payload.images = Array.prototype.slice.call(document.images || []).map(function (image) {
+      var rect = image.getBoundingClientRect ? image.getBoundingClientRect() : { width: 0, height: 0 };
+      return {
+        src: image.currentSrc || image.src || '',
+        alt: image.getAttribute('alt'),
+        width: image.getAttribute('width') || '',
+        height: image.getAttribute('height') || '',
+        natural_width: image.naturalWidth || 0,
+        natural_height: image.naturalHeight || 0,
+        rendered_width: Math.round(rect.width || 0),
+        rendered_height: Math.round(rect.height || 0),
+        loading: image.getAttribute('loading') || '',
+        fetchpriority: image.getAttribute('fetchpriority') || '',
+        above_fold: rect.top < (window.innerHeight || 0) && rect.bottom > 0
+      };
+    }).filter(function (image) {
+      return image.src && (!image.alt || !image.width || !image.height || (image.above_fold && image.loading === 'lazy') || image.natural_width > image.rendered_width * 2.5 || image.natural_height > image.rendered_height * 2.5);
+    }).slice(0, 50);
+
+    payload.stylesheets = Array.prototype.slice.call(document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"], style')).map(function (node) {
+      var href = node.href || '';
+      var media = node.getAttribute('media') || '';
+      return {
+        href: href,
+        id: node.id || '',
+        media: media,
+        disabled: !!node.disabled,
+        render_blocking: node.tagName.toLowerCase() === 'link' && node.rel === 'stylesheet' && (!media || media === 'all' || media === 'screen'),
+        inline_size: node.tagName.toLowerCase() === 'style' ? (node.textContent || '').length : 0
+      };
+    }).filter(function (style) {
+      return style.render_blocking || style.inline_size > 50000;
+    }).slice(0, 50);
+
+    payload.dom = {
+      node_count: document.getElementsByTagName('*').length,
+      iframes: document.getElementsByTagName('iframe').length,
+      forms: document.forms ? document.forms.length : 0,
+      viewport: document.querySelector('meta[name="viewport"]') ? 'present' : 'missing'
+    };
+  }
+
+  function hasFrontendOptimizationProblem() {
+    return (payload.images && payload.images.length) || (payload.stylesheets && payload.stylesheets.length) || (payload.dom && (payload.dom.node_count > 1500 || payload.dom.viewport === 'missing'));
+  }
+
   function inspectElementor() {
     if (/elementor/.test(document.body.className) || window.elementor || window.elementorFrontend) {
       var failedWidgets = Array.prototype.slice.call(document.querySelectorAll('.elementor-widget:not(.elementor-widget-text-editor)')).filter(function (widget) {
@@ -148,8 +209,9 @@
   function send() {
     inspectScripts();
     inspectPerformance();
+    inspectFrontendOptimization();
     inspectElementor();
-    if (!payload.console_errors.length && !payload.ajax_failures.length && !payload.elementor_events.length && !hasPerformanceProblem()) {
+    if (!payload.console_errors.length && !payload.ajax_failures.length && !payload.elementor_events.length && !hasPerformanceProblem() && !hasFrontendOptimizationProblem()) {
       return;
     }
     window.fetch(window.WPDoctorAICollector.restUrl, {

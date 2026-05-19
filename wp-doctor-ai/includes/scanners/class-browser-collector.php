@@ -34,7 +34,7 @@ final class BrowserCollector
             return;
         }
 
-        wp_enqueue_script('wp-doctor-ai-collector', WP_DOCTOR_AI_URL . 'assets/js/collector.js', array(), WP_DOCTOR_AI_VERSION, true);
+        wp_enqueue_script('wp-doctor-ai-collector', WP_DOCTOR_AI_URL . 'assets/js/collector.js', array(), WP_DOCTOR_AI_VERSION, false);
         wp_localize_script('wp-doctor-ai-collector', 'WPDoctorAICollector', array(
             'restUrl' => esc_url_raw(rest_url(WP_DOCTOR_AI_REST_NAMESPACE . '/scan')),
             'nonce' => wp_create_nonce('wp_rest'),

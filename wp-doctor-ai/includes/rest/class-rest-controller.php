@@ -79,6 +79,21 @@ final class RestController
                 ),
             ),
         ));
+        register_rest_route(WP_DOCTOR_AI_REST_NAMESPACE, '/fixes', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'fixes'),
+            'permission_callback' => array($this, 'can_manage'),
+        ));
+        register_rest_route(WP_DOCTOR_AI_REST_NAMESPACE, '/fixes/rollback', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'rollback_fix'),
+            'permission_callback' => array($this, 'can_manage'),
+            'args' => array(
+                'fix_id' => array(
+                    'sanitize_callback' => 'sanitize_key',
+                ),
+            ),
+        ));
         register_rest_route(WP_DOCTOR_AI_REST_NAMESPACE, '/credits/adjust', array(
             'methods' => 'POST',
             'callback' => array($this, 'adjust_credits'),
@@ -217,6 +232,21 @@ final class RestController
                 $translations->translate('solution_safe_mode_step', $language),
             ))),
         ));
+    }
+
+    public function fixes(WP_REST_Request $request): WP_REST_Response
+    {
+        return rest_ensure_response(array(
+            'active_fixes' => $this->container->fixes()->active_fixes(),
+            'debug_logs' => get_option('wp_doctor_ai_debug_logs', array()),
+        ));
+    }
+
+    public function rollback_fix(WP_REST_Request $request): WP_REST_Response
+    {
+        $params = (array) $request->get_json_params();
+        $fix_id = sanitize_key((string) ($params['fix_id'] ?? $request->get_param('fix_id') ?? 'duplicate_script_dedupe'));
+        return rest_ensure_response($this->container->fixes()->rollback_fix($fix_id));
     }
 
     public function adjust_credits(WP_REST_Request $request): WP_REST_Response

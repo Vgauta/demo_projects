@@ -80,6 +80,8 @@ final class Admin
             'is_premium' => $this->container->licensing()->is_premium(),
             'checkout_url' => $this->container->licensing()->checkout_url(),
             'settings' => get_option('wp_doctor_ai_settings', array()),
+            'active_fixes' => $this->container->fixes()->active_fixes(),
+            'debug_logs' => get_option('wp_doctor_ai_debug_logs', array()),
             'ai_ready' => $this->container->ai()->has_api_key(),
         );
         include WP_DOCTOR_AI_PATH . 'templates/admin-dashboard.php';
@@ -97,12 +99,14 @@ final class Admin
         $posted = wp_unslash($_POST);
         $api_key = isset($posted['google_ai_studio_api_key']) ? sanitize_text_field((string) $posted['google_ai_studio_api_key']) : '';
         $language = isset($posted['language']) ? sanitize_text_field((string) $posted['language']) : 'en';
+        $debug_mode = ! empty($posted['debug_mode']);
 
         $settings['ai_enabled'] = '' !== $api_key;
         $settings['ai_provider'] = '' !== $api_key ? 'gemini' : 'none';
         $settings['google_ai_studio_api_key'] = $api_key;
         $settings['gemini_model'] = 'gemini-2.0-flash';
         $settings['language'] = $language ?: 'en';
+        $settings['debug_mode'] = $debug_mode;
 
         update_option('wp_doctor_ai_settings', $settings);
 

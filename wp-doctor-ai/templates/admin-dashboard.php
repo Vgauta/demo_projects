@@ -63,7 +63,7 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
             </div>
             <div class="wpda-filters">
                 <select data-filter="severity"><option value=""><?php esc_html_e('All severities', 'wp-doctor-ai'); ?></option><option>critical</option><option>high</option><option>medium</option><option>low</option></select>
-                <select data-filter="issue_type"><option value=""><?php esc_html_e('All issue types', 'wp-doctor-ai'); ?></option><option value="console_error">console_error</option><option value="jquery_conflict">jquery_conflict</option><option value="duplicate_script">duplicate_script</option><option value="ajax_failure">ajax_failure</option><option value="elementor_crash">elementor_crash</option></select>
+                <select data-filter="issue_type"><option value=""><?php esc_html_e('All issue types', 'wp-doctor-ai'); ?></option><option value="page_speed_ttfb">page_speed_ttfb</option><option value="page_speed_lcp">page_speed_lcp</option><option value="page_speed_fcp">page_speed_fcp</option><option value="render_blocking_assets">render_blocking_assets</option><option value="image_missing_alt">image_missing_alt</option><option value="image_oversized">image_oversized</option><option value="console_error">console_error</option><option value="jquery_conflict">jquery_conflict</option><option value="duplicate_script">duplicate_script</option><option value="ajax_failure">ajax_failure</option><option value="elementor_crash">elementor_crash</option></select>
                 <input type="search" data-filter="affected_plugin" placeholder="<?php esc_attr_e('Plugin slug', 'wp-doctor-ai'); ?>" />
             </div>
             <div class="wpda-issues" data-wpda-issues>
@@ -124,6 +124,11 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
                     <span><?php esc_html_e('Default language', 'wp-doctor-ai'); ?></span>
                     <input type="text" name="language" value="<?php echo esc_attr($wpda_language); ?>" placeholder="<?php esc_attr_e('English, Hindi, Spanish, Arabic...', 'wp-doctor-ai'); ?>" />
                 </label>
+                <label>
+                    <span><?php esc_html_e('Debug optimization log', 'wp-doctor-ai'); ?></span>
+                    <input type="checkbox" name="debug_mode" value="1" <?php checked(! empty($wpda_settings['debug_mode'])); ?> />
+                    <small><?php esc_html_e('Store the last 100 scan/fix events for rollback and compatibility troubleshooting.', 'wp-doctor-ai'); ?></small>
+                </label>
                 <button class="button button-primary" type="submit"><?php esc_html_e('Save AI settings', 'wp-doctor-ai'); ?></button>
             </form>
             <div class="wpda-ai-help">
@@ -138,7 +143,19 @@ $wpda_custom_language = in_array($wpda_language, array('en', 'hi', 'es', 'de', '
             <h3><?php esc_html_e('Exports', 'wp-doctor-ai'); ?></h3>
             <p><a class="button" href="<?php echo esc_url($data['scans'] ? admin_url('admin-post.php?action=wp_doctor_ai_export&format=txt&_wpnonce=' . wp_create_nonce('wp_doctor_ai_export')) : '#'); ?>">TXT</a> <a class="button" href="<?php echo esc_url(admin_url('admin-post.php?action=wp_doctor_ai_export&format=json&_wpnonce=' . wp_create_nonce('wp_doctor_ai_export'))); ?>">JSON</a> <a class="button" href="<?php echo esc_url(admin_url('admin-post.php?action=wp_doctor_ai_export&format=pdf&_wpnonce=' . wp_create_nonce('wp_doctor_ai_export'))); ?>"><?php esc_html_e('Printable HTML', 'wp-doctor-ai'); ?></a></p>
             <h3><?php esc_html_e('Safe Mode', 'wp-doctor-ai'); ?></h3>
-            <p><?php esc_html_e('Prepared for isolated, temporary script-disabling tests with rollback. No permanent destructive actions are performed in v1.', 'wp-doctor-ai'); ?></p>
+            <p><?php esc_html_e('Automatic fixes use runtime WordPress hooks, avoid file edits, skip dependent handles, and can be rolled back from the active fixes list.', 'wp-doctor-ai'); ?></p>
+            <?php if (! empty($data['active_fixes'])) : ?>
+                <div class="wpda-ai-help">
+                    <strong><?php esc_html_e('Active reversible fixes', 'wp-doctor-ai'); ?></strong>
+                    <pre><?php echo esc_html(wp_json_encode($data['active_fixes'], JSON_PRETTY_PRINT)); ?></pre>
+                </div>
+            <?php endif; ?>
+            <?php if (! empty($wpda_settings['debug_mode']) && ! empty($data['debug_logs'])) : ?>
+                <div class="wpda-ai-help">
+                    <strong><?php esc_html_e('Debug optimization log', 'wp-doctor-ai'); ?></strong>
+                    <pre><?php echo esc_html(wp_json_encode(array_slice((array) $data['debug_logs'], -10), JSON_PRETTY_PRINT)); ?></pre>
+                </div>
+            <?php endif; ?>
         </aside>
     </main>
 </div>

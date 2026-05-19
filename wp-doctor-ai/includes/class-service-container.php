@@ -37,7 +37,7 @@ final class ServiceContainer
         $this->services['explanations'] = new ExplanationEngine($this->translations(), $this->ai());
         $this->services['detector'] = new DetectionEngine();
         $this->services['scanner'] = new ScannerEngine($this->detector(), $this->repository(), $this->logger());
-        $this->services['fixes'] = new FixManager();
+        $this->services['fixes'] = new FixManager($this->logger());
     }
 
     public function repository(): Repository

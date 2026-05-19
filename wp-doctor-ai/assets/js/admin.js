@@ -187,7 +187,16 @@
         first_contentful_paint: fcp ? Math.round(fcp.startTime || 0) : 0,
         slow_resources: []
       };
-      request('/scan', { method: 'POST', body: JSON.stringify({ manual: true, page_url: cleanUrl, scripts: scripts, console_errors: [], ajax_failures: [], elementor_events: [], performance: performancePayload }) }).then(function (data) {
+      var images = Array.prototype.slice.call(document.images || []).map(function (image) {
+        var rect = image.getBoundingClientRect ? image.getBoundingClientRect() : { width: 0, height: 0 };
+        return { src: image.currentSrc || image.src || '', alt: image.getAttribute('alt'), width: image.getAttribute('width') || '', height: image.getAttribute('height') || '', natural_width: image.naturalWidth || 0, natural_height: image.naturalHeight || 0, rendered_width: Math.round(rect.width || 0), rendered_height: Math.round(rect.height || 0), loading: image.getAttribute('loading') || '', fetchpriority: image.getAttribute('fetchpriority') || '', above_fold: rect.top < (window.innerHeight || 0) && rect.bottom > 0 };
+      }).slice(0, 50);
+      var stylesheets = Array.prototype.slice.call(document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"], style')).map(function (node) {
+        var media = node.getAttribute('media') || '';
+        return { href: node.href || '', id: node.id || '', media: media, disabled: !!node.disabled, render_blocking: node.tagName.toLowerCase() === 'link' && node.rel === 'stylesheet' && (!media || media === 'all' || media === 'screen'), inline_size: node.tagName.toLowerCase() === 'style' ? (node.textContent || '').length : 0 };
+      }).slice(0, 50);
+      var domPayload = { node_count: document.getElementsByTagName('*').length, iframes: document.getElementsByTagName('iframe').length, forms: document.forms ? document.forms.length : 0, viewport: document.querySelector('meta[name="viewport"]') ? 'present' : 'missing' };
+      request('/scan', { method: 'POST', body: JSON.stringify({ manual: true, page_url: cleanUrl, scripts: scripts, console_errors: [], ajax_failures: [], elementor_events: [], performance: performancePayload, images: images, stylesheets: stylesheets, dom: domPayload }) }).then(function (data) {
         if (data && data.error) {
           window.alert(data.message || 'Scan limit reached.');
           if (data.checkout_url) window.open(data.checkout_url, '_blank', 'noopener');

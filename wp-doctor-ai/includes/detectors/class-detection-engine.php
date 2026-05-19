@@ -22,6 +22,7 @@ final class DetectionEngine
         $issues = array_merge($issues, $this->detect_console_errors($payload));
         $issues = array_merge($issues, $this->detect_ajax_failures($payload));
         $issues = array_merge($issues, $this->detect_performance_issues($payload));
+        $issues = array_merge($issues, $this->detect_frontend_optimization_issues($payload));
         $issues = array_merge($issues, $this->detect_duplicate_scripts($payload));
         $issues = array_merge($issues, $this->detect_jquery_conflicts($payload));
         $issues = array_merge($issues, $this->detect_elementor_crashes($payload));
@@ -209,6 +210,133 @@ final class DetectionEngine
         });
 
         return array_slice($filtered, 0, 10);
+    }
+
+    private function detect_frontend_optimization_issues(array $payload): array
+    {
+        $issues = array();
+        $page_url = $payload['page_url'] ?? '';
+        $images = is_array($payload['images'] ?? null) ? $payload['images'] : array();
+        $stylesheets = is_array($payload['stylesheets'] ?? null) ? $payload['stylesheets'] : array();
+        $dom = is_array($payload['dom'] ?? null) ? $payload['dom'] : array();
+
+        $missing_alt = array_values(array_filter($images, static function ($image) {
+            return is_array($image) && '' === trim((string) ($image['alt'] ?? ''));
+        }));
+        if (! empty($missing_alt)) {
+            $issues[] = new Issue(array(
+                'issue_id' => 'image_missing_alt_' . md5($page_url . wp_json_encode(array_slice($missing_alt, 0, 10))),
+                'issue_type' => 'image_missing_alt',
+                'severity' => 'medium',
+                'confidence' => 96,
+                'affected_plugin' => 'content',
+                'affected_page' => $page_url,
+                'translation_key' => 'image_missing_alt_detected',
+                'technical_details' => array('count' => count($missing_alt), 'examples' => array_slice($missing_alt, 0, 10)),
+                'probable_cause' => sprintf(__('%d visible image(s) are missing alt text. PageSpeed and accessibility audits flag this because screen readers cannot understand the image purpose.', 'wp-doctor-ai'), count($missing_alt)),
+                'suggested_fix' => __('Add useful alt text in the Media Library, block editor, product image settings, Elementor image widgets, or theme template. Decorative images should use an intentionally empty alt attribute.', 'wp-doctor-ai'),
+                'impact' => __('Missing alt text hurts accessibility and can reduce content quality signals.', 'wp-doctor-ai'),
+            ));
+        }
+
+        $missing_dimensions = array_values(array_filter($images, static function ($image) {
+            return is_array($image) && (! trim((string) ($image['width'] ?? '')) || ! trim((string) ($image['height'] ?? '')));
+        }));
+        if (! empty($missing_dimensions)) {
+            $issues[] = new Issue(array(
+                'issue_id' => 'image_missing_dimensions_' . md5($page_url . wp_json_encode(array_slice($missing_dimensions, 0, 10))),
+                'issue_type' => 'image_missing_dimensions',
+                'severity' => 'medium',
+                'confidence' => 92,
+                'affected_plugin' => 'content',
+                'affected_page' => $page_url,
+                'translation_key' => 'image_missing_dimensions_detected',
+                'technical_details' => array('count' => count($missing_dimensions), 'examples' => array_slice($missing_dimensions, 0, 10)),
+                'probable_cause' => sprintf(__('%d image(s) do not reserve width/height space before loading.', 'wp-doctor-ai'), count($missing_dimensions)),
+                'suggested_fix' => __('Regenerate image markup with WordPress image functions, set width/height in widgets/templates, and reserve space for product/gallery/hero images.', 'wp-doctor-ai'),
+                'impact' => __('Images without dimensions can cause layout shifts and make Core Web Vitals worse.', 'wp-doctor-ai'),
+            ));
+        }
+
+        $oversized_images = array_values(array_filter($images, static function ($image) {
+            $natural_width = (int) ($image['natural_width'] ?? 0);
+            $natural_height = (int) ($image['natural_height'] ?? 0);
+            $rendered_width = max(1, (int) ($image['rendered_width'] ?? 0));
+            $rendered_height = max(1, (int) ($image['rendered_height'] ?? 0));
+            return $natural_width > $rendered_width * 2.5 || $natural_height > $rendered_height * 2.5;
+        }));
+        if (! empty($oversized_images)) {
+            $issues[] = new Issue(array(
+                'issue_id' => 'image_oversized_' . md5($page_url . wp_json_encode(array_slice($oversized_images, 0, 10))),
+                'issue_type' => 'image_oversized',
+                'severity' => 'high',
+                'confidence' => 90,
+                'affected_plugin' => 'content',
+                'affected_page' => $page_url,
+                'translation_key' => 'image_oversized_detected',
+                'technical_details' => array('count' => count($oversized_images), 'examples' => array_slice($oversized_images, 0, 10)),
+                'probable_cause' => __('Some images are much larger than the size displayed on screen.', 'wp-doctor-ai'),
+                'suggested_fix' => __('Serve the correct WordPress thumbnail size, compress images, and use WebP/AVIF where possible. For hero images, preload the optimized file instead of the original upload.', 'wp-doctor-ai'),
+                'impact' => __('Oversized images waste bandwidth and commonly increase LCP.', 'wp-doctor-ai'),
+            ));
+        }
+
+        $lazy_hero = array_values(array_filter($images, static function ($image) {
+            return is_array($image) && ! empty($image['above_fold']) && 'lazy' === strtolower((string) ($image['loading'] ?? ''));
+        }));
+        if (! empty($lazy_hero)) {
+            $issues[] = new Issue(array(
+                'issue_id' => 'image_lazy_above_fold_' . md5($page_url . wp_json_encode(array_slice($lazy_hero, 0, 5))),
+                'issue_type' => 'image_lazy_above_fold',
+                'severity' => 'high',
+                'confidence' => 88,
+                'affected_plugin' => 'content',
+                'affected_page' => $page_url,
+                'translation_key' => 'image_lazy_above_fold_detected',
+                'technical_details' => array('count' => count($lazy_hero), 'examples' => array_slice($lazy_hero, 0, 5)),
+                'probable_cause' => __('An above-the-fold image is lazy-loaded, so the browser waits too long before requesting likely LCP content.', 'wp-doctor-ai'),
+                'suggested_fix' => __('Disable lazy loading for the first hero/product image and add fetchpriority="high" or a preload only for that primary image.', 'wp-doctor-ai'),
+                'impact' => __('Lazy-loading the hero image can make PageSpeed report a very slow LCP.', 'wp-doctor-ai'),
+            ));
+        }
+
+        $blocking_styles = array_values(array_filter($stylesheets, static function ($style) {
+            return is_array($style) && ! empty($style['render_blocking']);
+        }));
+        if (! empty($blocking_styles)) {
+            $issues[] = new Issue(array(
+                'issue_id' => 'render_blocking_assets_' . md5($page_url . wp_json_encode(array_slice($blocking_styles, 0, 10))),
+                'issue_type' => 'render_blocking_assets',
+                'severity' => 'high',
+                'confidence' => 90,
+                'affected_plugin' => 'frontend',
+                'affected_page' => $page_url,
+                'translation_key' => 'render_blocking_assets_detected',
+                'technical_details' => array('count' => count($blocking_styles), 'stylesheets' => array_slice($blocking_styles, 0, 10)),
+                'probable_cause' => sprintf(__('%d stylesheet(s) can block rendering before the page becomes visible.', 'wp-doctor-ai'), count($blocking_styles)),
+                'suggested_fix' => __('Inline only critical CSS, load non-critical CSS asynchronously through a tested optimization plugin, and avoid delaying styles required by Elementor, WooCommerce, menus, sliders, or above-the-fold layout.', 'wp-doctor-ai'),
+                'impact' => __('Render-blocking assets delay FCP/LCP and can make PageSpeed look stuck even if the page eventually loads.', 'wp-doctor-ai'),
+            ));
+        }
+
+        $node_count = (int) ($dom['node_count'] ?? 0);
+        if ($node_count > 1500) {
+            $issues[] = new Issue(array(
+                'issue_id' => 'dom_size_large_' . md5($page_url . $node_count),
+                'issue_type' => 'dom_size_large',
+                'severity' => $node_count > 3000 ? 'high' : 'medium',
+                'confidence' => 84,
+                'affected_plugin' => 'frontend',
+                'affected_page' => $page_url,
+                'translation_key' => 'dom_size_large_detected',
+                'technical_details' => array('node_count' => $node_count, 'iframes' => (int) ($dom['iframes'] ?? 0)),
+                'probable_cause' => sprintf(__('The page has about %d DOM nodes, often caused by page-builder sections, mega menus, sliders, popups, or repeated product widgets.', 'wp-doctor-ai'), $node_count),
+                'suggested_fix' => __('Reduce nested builder containers, remove hidden duplicate sections, paginate long product lists, and disable unused widgets/popups on pages that do not need them.', 'wp-doctor-ai'),
+                'impact' => __('Large DOM size slows style calculation, JavaScript work, and interactions.', 'wp-doctor-ai'),
+            ));
+        }
+
+        return $issues;
     }
 
     private function detect_duplicate_scripts(array $payload): array
