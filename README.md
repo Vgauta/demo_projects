@@ -282,3 +282,91 @@ The plugin is activation-safe. If WooCommerce is inactive, activate WooCommerce 
 ## Advanced developer note
 
 The plugin stores configurator data internally as JSON so it remains extensible. The **Advanced JSON** tab is available for developers, but store admins should use the default **Visual Builder** tab.
+
+---
+
+## Detailed guide: Add New Configurator screen
+
+Use this screen when you want to create a reusable configurator template that can be attached to one or more WooCommerce products.
+
+### 1. Open the configurator editor
+
+1. Go to **WordPress Admin → Configurators**.
+2. Click **Add Configurator** or **Add New**.
+3. Enter a name, for example **Custom Shirt Builder**.
+4. Stay on the default **Visual Builder** tab.
+
+### 2. Add Product Preview Layers
+
+Preview layers control what appears in the live product preview.
+
+1. Click **Add Layer**.
+2. Fill in **Layer title**, for example `Base Shirt Image`.
+3. Leave **Layer ID** empty if you want the plugin to auto-generate it.
+4. Choose a **Layer type**:
+   - **Image** for a transparent PNG/SVG/JPG preview layer.
+   - **Color** for a color overlay style layer.
+   - **Text** for a text preview layer.
+   - **Upload** for a customer-upload preview layer.
+5. Click **Choose Image** to select the layer image from the WordPress Media Library.
+6. Set **Sort order**. Lower numbers appear earlier in the preview stack.
+7. Keep **Enabled** checked if this layer should be active.
+8. Use **Remove layer** only if you want to delete that layer.
+
+### 3. Add Option Groups
+
+Option groups are the choices customers click on the product page, such as color, size, finish, material, or style.
+
+1. Click **Add Option Group**.
+2. Enter **Group title**, for example `Choose Color`.
+3. Leave **Group ID** empty to auto-generate it.
+4. Choose **Display type**:
+   - **Buttons** for normal option buttons.
+   - **Color swatches** for color choices.
+   - **Image swatches** for thumbnail choices.
+   - **Dropdown** for a compact select menu.
+5. Check **Required** if the customer must choose an option.
+6. Set **Sort order**.
+7. Keep **Enabled** checked.
+
+### 4. Add options inside a group
+
+1. Inside the option group, click **Add Option**.
+2. Enter **Option label**, for example `Black` or `Premium Finish`.
+3. Leave **Option ID** empty to auto-generate it.
+4. Choose a color with the color picker if this is a color option.
+5. Click **Choose Image** beside **Option image** if you want a thumbnail.
+6. Click **Choose Image** beside **Layer image** if this option should change the product preview.
+7. Enter **Price adjustment** if this option adds cost.
+8. Set **Sort order**.
+9. Check **Default selected** if this option should be preselected.
+10. Keep **Enabled** checked.
+
+### 5. Add text fields
+
+1. Click **Add Text Field**.
+2. Enter the field label, such as `Name on product`.
+3. Add placeholder text, such as `Enter your name`.
+4. Set **Max length**.
+5. Add a **Price adjustment** if custom text costs extra.
+6. Check **Required** if customers must fill it in.
+
+### 6. Add upload fields
+
+1. Click **Add Upload Field**.
+2. Enter a label, such as `Upload Logo`.
+3. Set allowed file types, for example `jpg,png,webp`.
+4. Set max file size in MB.
+5. Add a **Price adjustment** if logo upload costs extra.
+6. Check **Required** if upload is mandatory.
+
+### 7. Save and test
+
+1. Click **Publish** or **Update**.
+2. Open the WooCommerce product.
+3. Go to **Product Data → Configurator**.
+4. Enable the configurator and select this template.
+5. Update the product.
+6. Open the product page on the frontend and test all options.
+
+Tip: If buttons do not respond after an update, hard refresh the WordPress admin page once so the browser loads the latest plugin JavaScript.
