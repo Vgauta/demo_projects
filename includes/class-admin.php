@@ -19,16 +19,14 @@ class CWPC_Admin {
 		echo '<nav class="cwpc-tabs"><button type="button" class="button button-primary cwpc-tab" data-tab="visual">Visual Builder</button><button type="button" class="button cwpc-tab" data-tab="json">Advanced JSON</button></nav>';
 		echo '<div class="cwpc-notices" aria-live="polite"></div>';
 		echo '<section class="cwpc-tab-panel cwpc-visual" data-panel="visual">';
-		echo '<p class="description">Build the configurator with simple fields. The plugin stores this as JSON automatically in the background.</p>';
+		echo '<p class="description">Create this configurator with editable cards. No JSON editing is needed for normal store admins.</p>';
 		echo '<div class="cwpc-actions"><button type="button" class="button" id="cwpc-add-layer">Add Layer</button><button type="button" class="button" id="cwpc-add-group">Add Option Group</button><button type="button" class="button" id="cwpc-add-text">Add Text Field</button><button type="button" class="button" id="cwpc-add-upload">Add Upload Field</button></div>';
 		echo '<h3>Product Preview Layers</h3><div id="cwpc-layers" class="cwpc-repeat-list"></div>';
-		echo '<h3>Options / Variations and Color Choices</h3><div id="cwpc-groups" class="cwpc-repeat-list"></div>';
-		echo '<h3>Text Input Fields</h3><div id="cwpc-text-fields" class="cwpc-repeat-list"></div>';
+		echo '<h3>Option Groups</h3><div id="cwpc-groups" class="cwpc-repeat-list"></div>';
+		echo '<h3>Text Fields</h3><div id="cwpc-text-fields" class="cwpc-repeat-list"></div>';
 		echo '<h3>Upload Fields</h3><div id="cwpc-upload-fields" class="cwpc-repeat-list"></div>';
-		echo '<h3>Conditional Logic</h3><p class="description">For each layer, option group, text field, or upload field, use “Show when field” and “equals value” to show it only after a previous choice.</p>';
 		echo '</section>';
-		echo '<section class="cwpc-tab-panel cwpc-json" data-panel="json" hidden><p class="description">Developer-only JSON view. Clients normally do not need to edit this.</p><p><button type="button" class="button" id="cwpc-load-example">Load Example</button> <button type="button" class="button" id="cwpc-format-json">Format JSON</button></p></section>';
-		echo '<textarea id="cwpc-schema" name="cwpc_schema" rows="18" class="large-text code">' . esc_textarea( $schema ) . '</textarea>';
+		echo '<section class="cwpc-tab-panel cwpc-json" data-panel="json" hidden><div class="notice notice-warning inline"><p><strong>Advanced developer mode.</strong> Editing this can break the configurator.</p></div><p><button type="button" class="button" id="cwpc-load-example">Load Example</button> <button type="button" class="button" id="cwpc-format-json">Load JSON into Visual Builder</button></p><textarea id="cwpc-schema" name="cwpc_schema" rows="22" class="large-text code">' . esc_textarea( $schema ) . '</textarea></section>';
 		echo '</div>';
 	}
 	public function save( $post_id ) {
@@ -48,11 +46,17 @@ class CWPC_Admin {
 				'id' => sanitize_key( $layer['id'] ?? '' ),
 				'title' => sanitize_text_field( $layer['title'] ?? '' ),
 				'type' => sanitize_key( $layer['type'] ?? 'option' ),
+				'section' => sanitize_key( $layer['section'] ?? '' ),
+				'display_type' => sanitize_key( $layer['display_type'] ?? 'buttons' ),
+				'required' => empty( $layer['required'] ) ? 'no' : 'yes',
 				'order' => (float) ( $layer['order'] ?? 0 ),
 				'enabled' => empty( $layer['enabled'] ) ? 'no' : 'yes',
 				'image' => esc_url_raw( $layer['image'] ?? '' ),
 				'price' => (float) ( $layer['price'] ?? 0 ),
 				'placeholder' => sanitize_text_field( $layer['placeholder'] ?? '' ),
+				'max_length' => absint( $layer['max_length'] ?? 80 ),
+				'allowed_types' => sanitize_text_field( $layer['allowed_types'] ?? 'jpg,png,gif,webp' ),
+				'max_size' => (float) ( $layer['max_size'] ?? 5 ),
 				'conditions' => array(),
 				'options' => array(),
 			);
@@ -63,7 +67,7 @@ class CWPC_Admin {
 				$item['options'][] = array(
 					'id' => sanitize_key( $option['id'] ?? '' ), 'title' => sanitize_text_field( $option['title'] ?? '' ), 'label' => sanitize_text_field( $option['label'] ?? '' ),
 					'image' => esc_url_raw( $option['image'] ?? '' ), 'layer_image' => esc_url_raw( $option['layer_image'] ?? '' ), 'color' => sanitize_hex_color( $option['color'] ?? '' ),
-					'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'enabled' => empty( $option['enabled'] ) ? 'no' : 'yes',
+					'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'default' => empty( $option['default'] ) ? 'no' : 'yes', 'enabled' => empty( $option['enabled'] ) ? 'no' : 'yes',
 					'conditions' => array_map( function( $condition ) { return array( 'field' => sanitize_key( $condition['field'] ?? '' ), 'equals' => sanitize_text_field( $condition['equals'] ?? '' ) ); }, $option['conditions'] ?? array() ),
 				);
 			}
