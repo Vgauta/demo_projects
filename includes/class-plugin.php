@@ -17,6 +17,7 @@ final class CWPC_Plugin {
 		$this->includes();
 		add_action( 'init', array( 'CWPC_Post_Types', 'register' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_notice' ) );
+		add_action( 'admin_notices', array( $this, 'onboarding_notice' ) );
 		new CWPC_Assets();
 		new CWPC_Admin();
 		new CWPC_REST_API();
@@ -38,6 +39,16 @@ final class CWPC_Plugin {
 		require_once CWPC_PATH . 'includes/class-post-types.php';
 		CWPC_Post_Types::register();
 		flush_rewrite_rules();
+		set_transient( 'cwpc_activation_notice', 1, DAY_IN_SECONDS );
+	}
+
+	public function onboarding_notice() {
+		if ( ! current_user_can( 'edit_posts' ) || ! get_transient( 'cwpc_activation_notice' ) ) {
+			return;
+		}
+		delete_transient( 'cwpc_activation_notice' );
+		$url = admin_url( 'edit.php?post_type=cwpc_configurator' );
+		echo '<div class="notice notice-success is-dismissible"><p><strong>Custom WooCommerce Product Configurator:</strong> Go to <a href="' . esc_url( $url ) . '">Configurators</a> to create your first configurator.</p></div>';
 	}
 
 	public function woocommerce_notice() {
