@@ -55,17 +55,20 @@ If WooCommerce is not active, this plugin will not break your site. You can stil
 10. Add text fields or upload fields with the provided buttons.
 11. Click **Publish**.
 
-### Step 2: Link the configurator to a WooCommerce product
+### Step 2: Configure it on a WooCommerce product
 
 1. Go to **Products → All Products**.
 2. Open the WooCommerce product you want customers to customize.
-3. Find the **Product Configurator** box on the product edit screen.
-4. Tick **Enable configurator**.
-5. Choose your configurator template from the **Template** dropdown.
-6. Leave the default position hook unless you know you want a different placement.
-   - Default recommended hook: `woocommerce_before_add_to_cart_button`
-7. Optional: tick **Require complete configuration** if you want customers to complete the configurator before purchase.
-8. Click **Update**.
+3. In the **Product data** box, open the **Configurator** tab.
+4. Tick **Enable Configurator**.
+5. Choose a saved template in **Starting Point / Configurator Template**.
+6. Optional: enter a manual template code/ID for custom integrations.
+7. Set quantity rules such as **Beginning Quantity**, **Minimum Quantity**, **Maximum Quantity**, and **Increment Step Quantity**.
+8. Choose whether to require a complete configuration or hide the default Add to Cart button until ready.
+9. Choose the **Configurator Position**.
+10. Select a **Product Base Preview Image** from the WordPress Media Library.
+11. Add product-level option images/layers if this product needs extra choices.
+12. Click **Update**.
 
 ### Step 3: Test on the storefront
 
@@ -122,8 +125,24 @@ After that, customers will see the configurator on that product page.
 5. **Set prices**: Add a price adjustment to any option, text field, or upload field that should cost extra.
 6. **Add text/upload fields**: Use **Add Text Field** or **Add Upload Field** if customers should enter text or upload a logo/artwork.
 7. **Add conditional logic**: Use “Show when field” and “Equals value” when a field should only appear after another option is selected.
-8. **Link configurator to product**: Edit the WooCommerce product, enable the configurator, select the template, and update the product.
+8. **Link configurator to product**: Edit the WooCommerce product, go to **Product Data → Configurator**, enable it, select the template, configure product options, and update the product.
 9. **Test frontend**: Open the product page, make selections, check the preview and price, add to cart, and place a test order.
+
+
+### Product Data → Configurator tab workflow
+
+For most client work, the easiest place to manage a product configurator is directly on the WooCommerce product edit page:
+
+1. Open **Products → All Products** and edit a product.
+2. Scroll to **Product data**.
+3. Click the **Configurator** tab.
+4. Enable the configurator.
+5. Choose a starting template or enter a manual code/ID if your developer provided one.
+6. Set beginning, minimum, maximum, and step quantities.
+7. Choose the display position.
+8. Select the base preview image.
+9. Add product option layers with simple fields for title, type, color, image, price, sort order, and enabled/disabled status.
+10. Update the product and test it on the frontend.
 
 ---
 
