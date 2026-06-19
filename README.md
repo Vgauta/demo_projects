@@ -46,19 +46,14 @@ If WooCommerce is not active, this plugin will not break your site. You can stil
 1. In WordPress admin, go to **Configurators**.
 2. Click **Add New**.
 3. Enter a clear title, for example: **Custom T-Shirt Configurator**.
-4. In the **Configurator Builder** box, click **Load Example** if you want a starter setup.
-5. Review or edit the JSON fields for:
-   - Layers
-   - Options
-   - Option titles
-   - Colors
-   - Price adjustments
-   - Text fields
-   - Upload fields
-   - Conditional rules
-   - Preview layer order
-6. Click **Format JSON** to make the setup easier to read.
-7. Click **Publish**.
+4. In the **Configurator Builder** box, keep the default **Visual Builder** tab selected.
+5. Click **Add Layer** to add product preview images/layers.
+6. Click **Add Option Group** and then **Add Option** to add choices such as sizes, parts, or colors.
+7. Use **Choose Image** to select images from the WordPress Media Library.
+8. Use the color picker for color choices.
+9. Add price adjustments, sort order, and conditional display rules if needed.
+10. Add text fields or upload fields with the provided buttons.
+11. Click **Publish**.
 
 ### Step 2: Link the configurator to a WooCommerce product
 
@@ -87,7 +82,7 @@ If WooCommerce is not active, this plugin will not break your site. You can stil
 
 A configurator is a template that describes the customization fields shown to customers.
 
-Inside **Configurators → Add New**, the current builder uses a JSON schema. This keeps the plugin flexible and makes it easier to add more fields later.
+Inside **Configurators → Add New**, the default **Visual Builder** lets admins create the configurator with buttons and simple fields. No JSON writing is required for normal client use.
 
 A basic configurator can include:
 
@@ -99,7 +94,7 @@ A basic configurator can include:
 - **Conditional rules**: Show an option only when another option is selected.
 - **Layer order**: Control which preview layer appears first, second, third, and so on.
 
-Tip: Start by clicking **Load Example**, then change the labels and prices for your own product.
+Tip: Start with one layer and one option group, test it on a product, then add more choices.
 
 ---
 
@@ -114,6 +109,21 @@ Each WooCommerce product can be linked to one configurator template.
 5. Save/update the product.
 
 After that, customers will see the configurator on that product page.
+
+
+---
+
+## How client will use it
+
+1. **Create configurator**: Go to **Configurators → Add New**, enter a title, and use the **Visual Builder** tab.
+2. **Add product image/layers**: Click **Add Layer**, enter a label, choose a layer image from the Media Library, and set the sort order.
+3. **Add options**: Click **Add Option Group**, then **Add Option** for each customer choice.
+4. **Set colors/images**: Use the color picker for color choices and **Choose Image** for option thumbnails or layer images.
+5. **Set prices**: Add a price adjustment to any option, text field, or upload field that should cost extra.
+6. **Add text/upload fields**: Use **Add Text Field** or **Add Upload Field** if customers should enter text or upload a logo/artwork.
+7. **Add conditional logic**: Use “Show when field” and “Equals value” when a field should only appear after another option is selected.
+8. **Link configurator to product**: Edit the WooCommerce product, enable the configurator, select the template, and update the product.
+9. **Test frontend**: Open the product page, make selections, check the preview and price, add to cart, and place a test order.
 
 ---
 
@@ -152,7 +162,7 @@ After checkout, customization details are saved as WooCommerce order item meta. 
 3. Find the purchased product line item.
 4. Expand or review the item meta/details.
 5. You should see:
-   - Full configurator JSON data
+   - Full configurator data
    - Selected option summary
    - Custom text
    - Uploaded file links
@@ -223,16 +233,9 @@ Check these items:
 
 Make sure the plugin is active under **Plugins → Installed Plugins**. The menu is called **Configurators** in the WordPress admin sidebar.
 
-### My JSON will not save
+### I see a warning in the builder
 
-The builder currently stores an extensible JSON schema. If the JSON is invalid, WordPress will not save it as a valid configurator schema.
-
-Try this:
-
-1. Click **Format JSON**.
-2. Fix any message shown by your browser.
-3. Make sure commas, quotes, and brackets are correct.
-4. Start again with **Load Example** if needed.
+The Visual Builder shows simple warnings for common setup issues, such as missing labels, invalid prices, or a preview layer without an image. Fill in the missing field or choose an image, then save again.
 
 ### Uploaded image/logo is not appearing
 
@@ -240,7 +243,7 @@ Check that the file is an allowed image type and under the upload size limit. Su
 
 ### Price adjustment does not look correct
 
-Check each option's `price` value in the configurator JSON. The frontend shows the option total, and WooCommerce applies the adjustment to the cart item price.
+Check each option's price adjustment in the Visual Builder. The frontend shows the option total, and WooCommerce applies the adjustment to the cart item price.
 
 ### WooCommerce is inactive
 
@@ -257,6 +260,6 @@ The plugin is activation-safe. If WooCommerce is inactive, activate WooCommerce 
 
 ---
 
-## Current builder note
+## Advanced developer note
 
-The first version uses a JSON-based builder for flexibility. This is useful for setup and testing, but a future version can add a more visual drag-and-drop admin builder if the client wants a fully no-code editing experience.
+The plugin stores configurator data internally as JSON so it remains extensible. The **Advanced JSON** tab is available for developers, but store admins should use the default **Visual Builder** tab.
