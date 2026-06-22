@@ -38,6 +38,7 @@ class CWPC_Frontend {
 		return esc_url_raw( $row[ $field ] ?? '' );
 	}
 	private function prepare_dining_schema( $schema ) {
+		foreach ( array( 'base_image', 'table_mask', 'chair_mask' ) as $field ) { $schema[ $field ] = $this->image_url_from_row( $schema, $field ); }
 		foreach ( array( 'table_colors', 'chair_colors' ) as $section ) {
 			if ( empty( $schema[ $section ] ) || ! is_array( $schema[ $section ] ) ) { continue; }
 			foreach ( $schema[ $section ] as $index => $row ) { $schema[ $section ][ $index ]['preview'] = $this->image_url_from_row( $row, 'preview' ); }
@@ -94,7 +95,7 @@ class CWPC_Frontend {
 			<div class="cwpc-dining-modal__dialog" role="dialog" aria-modal="true" aria-label="Dining set configurator">
 				<button type="button" class="cwpc-dining-modal__close" aria-label="Close" data-cwpc-close="1">&times;</button>
 				<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema, CWPC_JSON_FLAGS ) ); ?>'>
-					<div class="cwpc-dining-preview"><img class="cwpc-preview-layer cwpc-table-layer" alt="Table preview" src="" data-product-image="<?php echo esc_url( $product_image ); ?>"><img class="cwpc-preview-layer cwpc-chair-layer" alt="Chair preview" src=""></div>
+					<div class="cwpc-dining-preview"><canvas class="cwpc-dining-canvas" width="900" height="650" data-product-image="<?php echo esc_url( $product_image ); ?>" aria-label="Dining set preview"></canvas></div>
 					<div class="cwpc-dining-fields">
 						<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
 						<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>

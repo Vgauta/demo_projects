@@ -88,6 +88,20 @@ Use this workflow for every dining table product:
 
 The product edit tab lets the client edit the default template with form fields.
 
+
+### Dynamic canvas recolor preview
+
+The Dining Set Configurator is not only a variation image swap. For the main preview, the client uploads one base dining-set image plus transparent PNG recolor masks for the table and chairs. The frontend canvas tints those masks from the selected color codes, so the store does not need to upload every table/chair color combination manually.
+
+Recommended image setup:
+
+- Base preview image: the full dining set scene.
+- Table recolor mask: transparent PNG where only the table recolor area is visible.
+- Chair recolor mask: transparent PNG where only the chair recolor area is visible.
+- Chair design overlay/mask: optional per-design mask/image if the chair shape changes.
+
+If a mask is missing, the plugin safely falls back to the older preview image mapping when available, or the base image only.
+
 ### 1. Table colors
 
 For each table color, the client can edit:
@@ -95,7 +109,7 @@ For each table color, the client can edit:
 - Color name
 - Color code
 - Price adjustment
-- Table preview image
+- Optional fallback table preview image (advanced/fallback only)
 
 ### 2. Chair designs
 
@@ -103,7 +117,7 @@ For each chair design, the client can edit:
 
 - Chair design name
 - Thumbnail image
-- Default chair preview image
+- Chair design overlay/mask image
 - Price adjustment
 - Available chair colors for that design
 
@@ -122,7 +136,7 @@ For each chair color, the client can edit:
 - Color name
 - Color code
 - Price adjustment
-- Chair preview image
+- Optional fallback chair preview image (advanced/fallback only)
 
 Chair color swatches show only when the customer selects **Choose different chair color**.
 
@@ -132,7 +146,7 @@ For exact chair previews, the client can map:
 
 - Chair design
 - Chair color
-- Chair preview image
+- Optional fallback chair preview image (advanced/fallback only)
 
 If no exact design/color image is provided, the frontend falls back to the chair design default image.
 

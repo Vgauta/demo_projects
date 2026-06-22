@@ -75,6 +75,12 @@ final class CWPC_Plugin {
 
 	public static function default_dining_schema() {
 		return array(
+			'base_image' => '',
+			'base_image_id' => 0,
+			'table_mask' => '',
+			'table_mask_id' => 0,
+			'chair_mask' => '',
+			'chair_mask_id' => 0,
 			'table_colors' => array(
 				array( 'name' => 'White', 'color' => '#ffffff', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
 				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
