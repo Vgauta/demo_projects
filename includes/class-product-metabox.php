@@ -7,33 +7,36 @@ class CWPC_Product_Metabox {
 		add_action( 'woocommerce_process_product_meta', array( $this, 'save' ) );
 	}
 	public function tab( $tabs ) {
-		$tabs['cwpc_dining_set'] = array( 'label' => __( 'Dining Set Options', 'custom-wc-product-configurator' ), 'target' => 'cwpc_dining_set_product_data', 'class' => array(), 'priority' => 75 );
+		$tabs['cwpc_dining_set'] = array( 'label' => __( 'Dining Set Configurator', 'custom-wc-product-configurator' ), 'target' => 'cwpc_dining_set_product_data', 'class' => array(), 'priority' => 75 );
 		return $tabs;
 	}
 	public function panel() {
 		global $post;
 		$product_id = $post ? $post->ID : 0;
-		$map = json_decode( get_post_meta( $product_id, '_cwpc_dining_preview_map', true ), true );
-		if ( ! is_array( $map ) ) { $map = array(); }
+		$schema = get_post_meta( $product_id, '_cwpc_dining_schema', true );
+		if ( ! $schema ) { $schema = get_option( 'cwpc_default_dining_schema', wp_json_encode( CWPC_Plugin::default_dining_schema() ) ); }
 		echo '<div id="cwpc_dining_set_product_data" class="panel woocommerce_options_panel hidden"><div class="options_group">';
 		woocommerce_wp_checkbox( array( 'id' => '_cwpc_dining_enabled', 'label' => __( 'Enable Dining Set Configurator', 'custom-wc-product-configurator' ), 'value' => get_post_meta( $product_id, '_cwpc_dining_enabled', true ) ) );
-		woocommerce_wp_text_input( array( 'id' => '_cwpc_base_chairs', 'label' => __( 'Base set includes number of chairs', 'custom-wc-product-configurator' ), 'type' => 'number', 'custom_attributes' => array( 'min' => '0', 'step' => '1' ), 'value' => get_post_meta( $product_id, '_cwpc_base_chairs', true ) ?: 6 ) );
-		woocommerce_wp_text_input( array( 'id' => '_cwpc_extra_chair_price', 'label' => __( 'Extra chair price', 'custom-wc-product-configurator' ), 'type' => 'number', 'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ), 'value' => get_post_meta( $product_id, '_cwpc_extra_chair_price', true ) ?: 0 ) );
-		woocommerce_wp_checkbox( array( 'id' => '_cwpc_sync_chair_color', 'label' => __( 'Sync chair color with table color by default', 'custom-wc-product-configurator' ), 'value' => get_post_meta( $product_id, '_cwpc_sync_chair_color', true ) ?: 'yes' ) );
-		woocommerce_wp_checkbox( array( 'id' => '_cwpc_hide_chair_color_until_different', 'label' => __( 'Hide Chair Color field unless “Different chair color” is selected', 'custom-wc-product-configurator' ), 'value' => get_post_meta( $product_id, '_cwpc_hide_chair_color_until_different', true ) ) );
-		echo '</div><div class="options_group cwpc-dining-map"><h4>' . esc_html__( 'Product preview image mapping', 'custom-wc-product-configurator' ) . '</h4><p class="description">Add one row for each table/chair color preview image. Colors should match your WooCommerce attribute option names.</p><div id="cwpc-dining-map-list" data-map="' . esc_attr( wp_json_encode( $map ) ) . '"></div><p><button type="button" class="button" id="cwpc-add-dining-map">' . esc_html__( 'Add Preview Mapping', 'custom-wc-product-configurator' ) . '</button></p><input type="hidden" id="_cwpc_dining_preview_map" name="_cwpc_dining_preview_map" value="' . esc_attr( wp_json_encode( $map ) ) . '"></div></div>';
+		echo '<p class="form-field"><label>' . esc_html__( 'Default template', 'custom-wc-product-configurator' ) . '</label><button type="button" class="button" id="cwpc-load-dining-default">' . esc_html__( 'Load Default Dining Set Template', 'custom-wc-product-configurator' ) . '</button><span class="description"> ' . esc_html__( 'Loads table colors, chair designs, extra chairs, chair colors, and addons.', 'custom-wc-product-configurator' ) . '</span></p>';
+		echo '</div><div class="options_group cwpc-dining-schema-builder" data-default="' . esc_attr( get_option( 'cwpc_default_dining_schema', wp_json_encode( CWPC_Plugin::default_dining_schema() ) ) ) . '">';
+		echo '<input type="hidden" id="_cwpc_dining_schema" name="_cwpc_dining_schema" value="' . esc_attr( $schema ) . '">';
+		echo '<h4>1. Choose Table Color</h4><div id="cwpc-table-colors" class="cwpc-repeat-list"></div><p><button type="button" class="button cwpc-add-row" data-target="table_colors">Add Table Color</button></p>';
+		echo '<h4>2. Choose Chair Design</h4><div id="cwpc-chair-designs" class="cwpc-repeat-list"></div><p><button type="button" class="button cwpc-add-row" data-target="chair_designs">Add Chair Design</button></p>';
+		echo '<h4>3. Extra Chairs</h4><div id="cwpc-extra-chairs" class="cwpc-repeat-list"></div><p><button type="button" class="button cwpc-add-row" data-target="extra_chairs">Add Extra Chairs Option</button></p>';
+		echo '<h4>4-5. Chair Color</h4><div id="cwpc-chair-colors" class="cwpc-repeat-list"></div><p><button type="button" class="button cwpc-add-row" data-target="chair_colors">Add Chair Color</button></p>';
+		echo '<h4>6. Addons</h4><div id="cwpc-addons" class="cwpc-repeat-list"></div><p><button type="button" class="button cwpc-add-row" data-target="addons">Add Addon</button></p>';
+		echo '</div></div>';
 	}
 	public function save( $product_id ) {
 		update_post_meta( $product_id, '_cwpc_dining_enabled', isset( $_POST['_cwpc_dining_enabled'] ) ? 'yes' : 'no' );
-		update_post_meta( $product_id, '_cwpc_base_chairs', absint( $_POST['_cwpc_base_chairs'] ?? 6 ) );
-		update_post_meta( $product_id, '_cwpc_extra_chair_price', wc_format_decimal( wp_unslash( $_POST['_cwpc_extra_chair_price'] ?? 0 ) ) );
-		update_post_meta( $product_id, '_cwpc_sync_chair_color', isset( $_POST['_cwpc_sync_chair_color'] ) ? 'yes' : 'no' );
-		update_post_meta( $product_id, '_cwpc_hide_chair_color_until_different', isset( $_POST['_cwpc_hide_chair_color_until_different'] ) ? 'yes' : 'no' );
-		$rows = json_decode( wp_unslash( $_POST['_cwpc_dining_preview_map'] ?? '[]' ), true );
-		$clean = array();
-		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
-			$clean[] = array( 'table_color' => sanitize_text_field( $row['table_color'] ?? '' ), 'chair_color' => sanitize_text_field( $row['chair_color'] ?? '' ), 'image' => esc_url_raw( $row['image'] ?? '' ) );
-		}
-		update_post_meta( $product_id, '_cwpc_dining_preview_map', wp_json_encode( $clean ) );
+		$schema = json_decode( wp_unslash( $_POST['_cwpc_dining_schema'] ?? '' ), true );
+		if ( ! is_array( $schema ) ) { $schema = CWPC_Plugin::default_dining_schema(); }
+		$clean = array( 'table_colors' => array(), 'chair_designs' => array(), 'extra_chairs' => array(), 'chair_colors' => array(), 'addons' => array() );
+		foreach ( $schema['table_colors'] ?? array() as $row ) { $clean['table_colors'][] = array( 'name' => sanitize_text_field( $row['name'] ?? '' ), 'color' => sanitize_hex_color( $row['color'] ?? '' ), 'price' => (float) ( $row['price'] ?? 0 ), 'preview' => esc_url_raw( $row['preview'] ?? '' ) ); }
+		foreach ( $schema['chair_designs'] ?? array() as $row ) { $clean['chair_designs'][] = array( 'name' => sanitize_text_field( $row['name'] ?? '' ), 'thumbnail' => esc_url_raw( $row['thumbnail'] ?? '' ), 'preview' => esc_url_raw( $row['preview'] ?? '' ), 'price' => (float) ( $row['price'] ?? 0 ), 'colors' => array_map( 'sanitize_text_field', (array) ( $row['colors'] ?? array() ) ) ); }
+		foreach ( $schema['extra_chairs'] ?? array() as $row ) { $clean['extra_chairs'][] = array( 'label' => sanitize_text_field( $row['label'] ?? '' ), 'quantity' => absint( $row['quantity'] ?? 0 ), 'price' => (float) ( $row['price'] ?? 0 ) ); }
+		foreach ( $schema['chair_colors'] ?? array() as $row ) { $clean['chair_colors'][] = array( 'name' => sanitize_text_field( $row['name'] ?? '' ), 'color' => sanitize_hex_color( $row['color'] ?? '' ), 'price' => (float) ( $row['price'] ?? 0 ), 'preview' => esc_url_raw( $row['preview'] ?? '' ) ); }
+		foreach ( $schema['addons'] ?? array() as $row ) { $clean['addons'][] = array( 'name' => sanitize_text_field( $row['name'] ?? '' ), 'price' => (float) ( $row['price'] ?? 0 ), 'enabled' => empty( $row['enabled'] ) ? 'no' : 'yes' ); }
+		update_post_meta( $product_id, '_cwpc_dining_schema', wp_json_encode( $clean ) );
 	}
 }

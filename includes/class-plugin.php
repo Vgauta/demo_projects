@@ -40,6 +40,11 @@ final class CWPC_Plugin {
 		CWPC_Post_Types::register();
 		flush_rewrite_rules();
 		set_transient( 'cwpc_activation_notice', 1, DAY_IN_SECONDS );
+		if ( ! get_option( 'cwpc_default_dining_schema' ) ) { update_option( 'cwpc_default_dining_schema', wp_json_encode( self::default_dining_schema() ) ); }
+		if ( ! get_page_by_title( 'Dining Table Set Configurator', OBJECT, 'cwpc_configurator' ) ) {
+			$post_id = wp_insert_post( array( 'post_title' => 'Dining Table Set Configurator', 'post_type' => 'cwpc_configurator', 'post_status' => 'publish' ) );
+			if ( $post_id && ! is_wp_error( $post_id ) ) { update_post_meta( $post_id, '_cwpc_schema', wp_json_encode( self::default_schema(), JSON_PRETTY_PRINT ) ); }
+		}
 	}
 
 	public function onboarding_notice() {
@@ -55,6 +60,41 @@ final class CWPC_Plugin {
 		if ( current_user_can( 'activate_plugins' ) && ! $this->woocommerce_active ) {
 			echo '<div class="notice notice-warning"><p><strong>Custom WooCommerce Product Configurator:</strong> WooCommerce is inactive. Configurator templates remain editable, but product, cart, and order integrations are disabled.</p></div>';
 		}
+	}
+
+
+	public static function default_dining_schema() {
+		return array(
+			'table_colors' => array(
+				array( 'name' => 'White', 'color' => '#ffffff', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Champagne', 'color' => '#d6b98c', 'price' => 0, 'preview' => '' ),
+			),
+			'chair_designs' => array(
+				array( 'name' => 'Luna', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Tuna', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Sano', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'X Design', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+			),
+			'extra_chairs' => array(
+				array( 'label' => '6 chairs included in price', 'quantity' => 0, 'price' => 0 ),
+				array( 'label' => 'Add 2 extra chairs', 'quantity' => 2, 'price' => 0 ),
+				array( 'label' => 'Add 4 extra chairs', 'quantity' => 4, 'price' => 0 ),
+				array( 'label' => 'Add 6 extra chairs', 'quantity' => 6, 'price' => 0 ),
+			),
+			'chair_colors' => array(
+				array( 'name' => 'Mixed colors', 'color' => '#d9a441', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Black', 'color' => '#000000', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Mustard', 'color' => '#d6a100', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Green', 'color' => '#4f7f52', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Light Grey', 'color' => '#c9c9c9', 'price' => 0, 'preview' => '' ),
+			),
+			'addons' => array(
+				array( 'name' => 'Chair cushion', 'price' => 0, 'enabled' => 'yes' ),
+				array( 'name' => 'Waterproof cover', 'price' => 0, 'enabled' => 'yes' ),
+			),
+		);
 	}
 
 	public static function default_schema() {

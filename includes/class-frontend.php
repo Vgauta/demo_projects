@@ -46,16 +46,21 @@ class CWPC_Frontend {
 	public function render_dining( $product_id ) {
 		$product = wc_get_product( $product_id );
 		if ( ! $product || 'yes' !== get_post_meta( $product_id, '_cwpc_dining_enabled', true ) ) { return ''; }
-		$table_colors = $this->attribute_values( $product, 'table color' );
-		$chair_colors = $this->attribute_values( $product, 'chair color' );
-		$map = json_decode( get_post_meta( $product_id, '_cwpc_dining_preview_map', true ), true );
-		if ( ! is_array( $map ) ) { $map = array(); }
-		$config = array( 'tableColors' => $table_colors, 'chairColors' => $chair_colors ?: $table_colors, 'baseChairs' => absint( get_post_meta( $product_id, '_cwpc_base_chairs', true ) ) ?: 6, 'extraChairPrice' => (float) get_post_meta( $product_id, '_cwpc_extra_chair_price', true ), 'syncChairColor' => get_post_meta( $product_id, '_cwpc_sync_chair_color', true ) ?: 'yes', 'hideChairColorUntilDifferent' => get_post_meta( $product_id, '_cwpc_hide_chair_color_until_different', true ), 'previewMap' => $map );
+		$schema = json_decode( get_post_meta( $product_id, '_cwpc_dining_schema', true ), true );
+		if ( ! is_array( $schema ) ) { $schema = CWPC_Plugin::default_dining_schema(); }
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		ob_start(); ?>
-		<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $config ) ); ?>'>
+		<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>'>
 			<div class="cwpc-dining-preview"><img alt="Dining set preview" src=""></div>
-			<div class="cwpc-dining-fields"><div class="cwpc-table-colors"></div><label class="cwpc-different-chair-wrap"><input type="checkbox" class="cwpc-different-chair"> <?php esc_html_e( 'Different chair color', 'custom-wc-product-configurator' ); ?></label><div class="cwpc-chair-colors"></div><label><?php esc_html_e( 'Extra chairs', 'custom-wc-product-configurator' ); ?> <input type="number" min="0" step="1" class="cwpc-extra-chairs" value="0"></label><div class="cwpc-dining-price"></div></div>
+			<div class="cwpc-dining-fields">
+				<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
+				<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>
+				<div class="cwpc-step" data-step="3"><h4>3. Extra Chairs</h4><select class="cwpc-extra-chairs"></select></div>
+				<div class="cwpc-step" data-step="4"><h4>4. Chair Color</h4><div class="cwpc-chair-mode"><button type="button" class="cwpc-mode active" data-mode="same">Same as table color</button><button type="button" class="cwpc-mode" data-mode="different">Choose different chair color</button></div></div>
+				<div class="cwpc-step cwpc-chair-color-step" data-step="5"><h4>5. Choose Chair Color</h4><div class="cwpc-chair-colors"></div></div>
+				<div class="cwpc-step" data-step="6"><h4>6. Addons</h4><div class="cwpc-addons"></div></div>
+				<div class="cwpc-dining-price"></div>
+			</div>
 			<input type="hidden" name="cwpc_configuration" class="cwpc-configuration" value=""><input type="hidden" name="cwpc_preview_image" class="cwpc-preview-image" value="">
 		</div><?php return ob_get_clean();
 	}
