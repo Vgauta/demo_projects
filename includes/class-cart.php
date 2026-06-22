@@ -12,7 +12,7 @@ class CWPC_Cart {
 		$cart_item_data['cwpc_price_adjustment'] = $cart_item_data['cwpc_extra_price'];
 		$cart_item_data['cwpc_preview_image'] = esc_url_raw( wp_unslash( $_POST['cwpc_preview_image'] ?? '' ) );
 		$cart_item_data['cwpc_uploads'] = $this->handle_uploads();
-		$cart_item_data['unique_key'] = md5( wp_json_encode( $cart_item_data['cwpc_configuration'] ) . microtime() );
+		$cart_item_data['unique_key'] = md5( wp_json_encode( $cart_item_data['cwpc_configuration'], CWPC_JSON_FLAGS ) . microtime() );
 		return $cart_item_data;
 	}
 	private function handle_uploads() {
@@ -29,10 +29,10 @@ class CWPC_Cart {
 		return $uploads;
 	}
 
-	private function sanitize_config( $config ) { return map_deep( $config, function( $value ) { return is_scalar( $value ) ? sanitize_text_field( (string) $value ) : $value; } ); }
+	private function sanitize_config( $config ) { return map_deep( $config, function( $value ) { return is_scalar( $value ) ? CWPC_Plugin::sanitize_utf8_text( (string) $value ) : $value; } ); }
 	public function display( $item_data, $cart_item ) {
 		if ( empty( $cart_item['cwpc_configuration']['summary'] ) ) { return $item_data; }
-		foreach ( (array) $cart_item['cwpc_configuration']['summary'] as $row ) { $item_data[] = array( 'name' => sanitize_text_field( $row['label'] ?? 'Option' ), 'value' => sanitize_text_field( $row['value'] ?? '' ) ); }
+		foreach ( (array) $cart_item['cwpc_configuration']['summary'] as $row ) { $item_data[] = array( 'name' => CWPC_Plugin::sanitize_utf8_text( $row['label'] ?? 'Option' ), 'value' => CWPC_Plugin::sanitize_utf8_text( $row['value'] ?? '' ) ); }
 		foreach ( (array) ( $cart_item['cwpc_uploads'] ?? array() ) as $key => $url ) { $item_data[] = array( 'name' => sprintf( __( 'Uploaded %s', 'custom-wc-product-configurator' ), $key ), 'value' => '<a href="' . esc_url( $url ) . '" target="_blank">View file</a>' ); }
 		if ( ! empty( $cart_item['cwpc_preview_image'] ) ) { $item_data[] = array( 'name' => __( 'Preview', 'custom-wc-product-configurator' ), 'value' => '<a href="' . esc_url( $cart_item['cwpc_preview_image'] ) . '" target="_blank">View preview</a>' ); }
 		return $item_data;

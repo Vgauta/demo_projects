@@ -13,7 +13,7 @@ class CWPC_Admin {
 		wp_nonce_field( 'cwpc_save_configurator', 'cwpc_nonce' );
 		$schema = get_post_meta( $post->ID, '_cwpc_schema', true );
 		if ( empty( $schema ) ) {
-			$schema = wp_json_encode( CWPC_Plugin::default_schema(), JSON_PRETTY_PRINT );
+			$schema = wp_json_encode( CWPC_Plugin::default_schema(), CWPC_JSON_FLAGS | JSON_PRETTY_PRINT );
 		}
 		echo '<div class="cwpc-builder" data-schema="' . esc_attr( $schema ) . '">';
 		echo '<nav class="cwpc-tabs"><button type="button" class="button button-primary cwpc-tab" data-tab="visual">Visual Builder</button><button type="button" class="button cwpc-tab" data-tab="json">Advanced JSON</button></nav>';
@@ -36,7 +36,7 @@ class CWPC_Admin {
 		$raw = isset( $_POST['cwpc_schema'] ) ? wp_unslash( $_POST['cwpc_schema'] ) : '';
 		$data = json_decode( $raw, true );
 		if ( is_array( $data ) ) {
-			update_post_meta( $post_id, '_cwpc_schema', wp_json_encode( $this->sanitize_schema( $data ), JSON_PRETTY_PRINT ) );
+			update_post_meta( $post_id, '_cwpc_schema', wp_json_encode( $this->sanitize_schema( $data ), CWPC_JSON_FLAGS | JSON_PRETTY_PRINT ) );
 		}
 	}
 	private function sanitize_schema( $data ) {
@@ -44,7 +44,7 @@ class CWPC_Admin {
 		foreach ( $data['layers'] ?? array() as $layer ) {
 			$item = array(
 				'id' => sanitize_key( $layer['id'] ?? '' ),
-				'title' => sanitize_text_field( $layer['title'] ?? '' ),
+				'title' => CWPC_Plugin::sanitize_utf8_text( $layer['title'] ?? '' ),
 				'type' => sanitize_key( $layer['type'] ?? 'option' ),
 				'section' => sanitize_key( $layer['section'] ?? '' ),
 				'display_type' => sanitize_key( $layer['display_type'] ?? 'buttons' ),
@@ -54,7 +54,7 @@ class CWPC_Admin {
 				'image' => esc_url_raw( $layer['image'] ?? '' ),
 				'image_id' => absint( $layer['image_id'] ?? 0 ),
 				'price' => (float) ( $layer['price'] ?? 0 ),
-				'placeholder' => sanitize_text_field( $layer['placeholder'] ?? '' ),
+				'placeholder' => CWPC_Plugin::sanitize_utf8_text( $layer['placeholder'] ?? '' ),
 				'max_length' => absint( $layer['max_length'] ?? 80 ),
 				'allowed_types' => sanitize_text_field( $layer['allowed_types'] ?? 'jpg,png,gif,webp' ),
 				'max_size' => (float) ( $layer['max_size'] ?? 5 ),
@@ -62,14 +62,14 @@ class CWPC_Admin {
 				'options' => array(),
 			);
 			foreach ( $layer['conditions'] ?? array() as $condition ) {
-				$item['conditions'][] = array( 'field' => sanitize_key( $condition['field'] ?? '' ), 'equals' => sanitize_text_field( $condition['equals'] ?? '' ) );
+				$item['conditions'][] = array( 'field' => sanitize_key( $condition['field'] ?? '' ), 'equals' => CWPC_Plugin::sanitize_utf8_text( $condition['equals'] ?? '' ) );
 			}
 			foreach ( $layer['options'] ?? array() as $option ) {
 				$item['options'][] = array(
-					'id' => sanitize_key( $option['id'] ?? '' ), 'title' => sanitize_text_field( $option['title'] ?? '' ), 'label' => sanitize_text_field( $option['label'] ?? '' ),
+					'id' => sanitize_key( $option['id'] ?? '' ), 'title' => CWPC_Plugin::sanitize_utf8_text( $option['title'] ?? '' ), 'label' => CWPC_Plugin::sanitize_utf8_text( $option['label'] ?? '' ),
 					'image' => esc_url_raw( $option['image'] ?? '' ), 'image_id' => absint( $option['image_id'] ?? 0 ), 'layer_image' => esc_url_raw( $option['layer_image'] ?? '' ), 'layer_image_id' => absint( $option['layer_image_id'] ?? 0 ), 'color' => sanitize_hex_color( $option['color'] ?? '' ),
 					'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'default' => empty( $option['default'] ) ? 'no' : 'yes', 'enabled' => empty( $option['enabled'] ) ? 'no' : 'yes',
-					'conditions' => array_map( function( $condition ) { return array( 'field' => sanitize_key( $condition['field'] ?? '' ), 'equals' => sanitize_text_field( $condition['equals'] ?? '' ) ); }, $option['conditions'] ?? array() ),
+					'conditions' => array_map( function( $condition ) { return array( 'field' => sanitize_key( $condition['field'] ?? '' ), 'equals' => CWPC_Plugin::sanitize_utf8_text( $condition['equals'] ?? '' ) ); }, $option['conditions'] ?? array() ),
 				);
 			}
 			$clean['layers'][] = $item;

@@ -40,10 +40,10 @@ final class CWPC_Plugin {
 		CWPC_Post_Types::register();
 		flush_rewrite_rules();
 		set_transient( 'cwpc_activation_notice', 1, DAY_IN_SECONDS );
-		if ( ! get_option( 'cwpc_default_dining_schema' ) ) { update_option( 'cwpc_default_dining_schema', wp_json_encode( self::default_dining_schema() ) ); }
+		if ( ! get_option( 'cwpc_default_dining_schema' ) ) { update_option( 'cwpc_default_dining_schema', wp_json_encode( self::default_dining_schema(), CWPC_JSON_FLAGS ) ); }
 		if ( ! get_page_by_title( 'Dining Table Set Configurator', OBJECT, 'cwpc_configurator' ) ) {
 			$post_id = wp_insert_post( array( 'post_title' => 'Dining Table Set Configurator', 'post_type' => 'cwpc_configurator', 'post_status' => 'publish' ) );
-			if ( $post_id && ! is_wp_error( $post_id ) ) { update_post_meta( $post_id, '_cwpc_schema', wp_json_encode( self::default_schema(), JSON_PRETTY_PRINT ) ); }
+			if ( $post_id && ! is_wp_error( $post_id ) ) { update_post_meta( $post_id, '_cwpc_schema', wp_json_encode( self::default_schema(), CWPC_JSON_FLAGS | JSON_PRETTY_PRINT ) ); }
 		}
 	}
 
@@ -62,6 +62,16 @@ final class CWPC_Plugin {
 		}
 	}
 
+
+
+	public static function sanitize_utf8_text( $value ) {
+		$text = (string) $value;
+		if ( preg_match( '/u05[0-9a-f]{2}/i', $text ) ) {
+			$text = preg_replace_callback( '/(?<![0-9a-fA-F])([0-9a-fA-F]{3})(?=u05[0-9a-fA-F]{2}|$)/', function( $match ) { return html_entity_decode( '&#x0' . $match[1] . ';', ENT_NOQUOTES, 'UTF-8' ); }, $text );
+			$text = preg_replace_callback( '/(?<!\\\\)u([0-9a-fA-F]{4})/', function( $match ) { return html_entity_decode( '&#x' . $match[1] . ';', ENT_NOQUOTES, 'UTF-8' ); }, $text );
+		}
+		return sanitize_text_field( $text );
+	}
 
 	public static function default_dining_schema() {
 		return array(

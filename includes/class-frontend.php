@@ -27,7 +27,7 @@ class CWPC_Frontend {
 		return is_array( $options ) && ! empty( $options );
 	}
 	private function debug( $message, $product_id = 0, $context = array() ) {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) { error_log( '[CWPC] ' . $message . ' product_id=' . absint( $product_id ) . ' context=' . wp_json_encode( $context ) ); }
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) { error_log( '[CWPC] ' . $message . ' product_id=' . absint( $product_id ) . ' context=' . wp_json_encode( $context, CWPC_JSON_FLAGS ) ); }
 	}
 	private function image_url_from_row( $row, $field ) {
 		$attachment_id = absint( $row[ $field . '_id' ] ?? 0 );
@@ -93,7 +93,7 @@ class CWPC_Frontend {
 			<div class="cwpc-dining-modal__overlay" data-cwpc-close="1"></div>
 			<div class="cwpc-dining-modal__dialog" role="dialog" aria-modal="true" aria-label="Dining set configurator">
 				<button type="button" class="cwpc-dining-modal__close" aria-label="Close" data-cwpc-close="1">&times;</button>
-				<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>'>
+				<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema, CWPC_JSON_FLAGS ) ); ?>'>
 					<div class="cwpc-dining-preview"><img class="cwpc-preview-layer cwpc-table-layer" alt="Table preview" src="" data-product-image="<?php echo esc_url( $product_image ); ?>"><img class="cwpc-preview-layer cwpc-chair-layer" alt="Chair preview" src=""></div>
 					<div class="cwpc-dining-fields">
 						<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
@@ -124,7 +124,7 @@ class CWPC_Frontend {
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		$this->debug( 'Configurator rendered.', $product_id, array( 'configurator_id' => $configurator_id, 'layers' => count( $schema['layers'] ) ) );
 		ob_start(); ?>
-		<div class="cwpc-configurator" data-schema='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>' data-product-id="<?php echo esc_attr( $product_id ); ?>" data-hide-add-to-cart="<?php echo esc_attr( get_post_meta( $product_id, '_cwpc_hide_add_to_cart', true ) ); ?>">
+		<div class="cwpc-configurator" data-schema='<?php echo esc_attr( wp_json_encode( $schema, CWPC_JSON_FLAGS ) ); ?>' data-product-id="<?php echo esc_attr( $product_id ); ?>" data-hide-add-to-cart="<?php echo esc_attr( get_post_meta( $product_id, '_cwpc_hide_add_to_cart', true ) ); ?>">
 			<div class="cwpc-preview"><canvas width="720" height="520" aria-label="Product preview"></canvas></div>
 			<div class="cwpc-panel"><h3><?php esc_html_e( 'Customize your product', 'custom-wc-product-configurator' ); ?></h3><div class="cwpc-fields"></div><div class="cwpc-price"></div><button type="button" class="button cwpc-reset">Reset</button></div>
 			<input type="hidden" name="cwpc_configuration" class="cwpc-configuration" value=""><input type="hidden" name="cwpc_preview_image" class="cwpc-preview-image" value="">
@@ -144,11 +144,11 @@ class CWPC_Frontend {
 			$type = sanitize_key( $option['type'] ?? 'image' );
 			$id = 'product_option_' . $index;
 			if ( in_array( $type, array( 'color', 'image' ), true ) ) {
-				$choice_options[] = array( 'id' => $id, 'title' => sanitize_text_field( $option['title'] ?? 'Product option' ), 'label' => sanitize_text_field( $option['title'] ?? 'Product option' ), 'color' => sanitize_hex_color( $option['color'] ?? '' ), 'image' => $this->image_url_from_row( $option, 'image' ), 'image_id' => absint( $option['image_id'] ?? 0 ), 'layer_image' => $this->image_url_from_row( $option, 'image' ), 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'enabled' => 'yes' );
+				$choice_options[] = array( 'id' => $id, 'title' => CWPC_Plugin::sanitize_utf8_text( $option['title'] ?? 'Product option' ), 'label' => CWPC_Plugin::sanitize_utf8_text( $option['title'] ?? 'Product option' ), 'color' => sanitize_hex_color( $option['color'] ?? '' ), 'image' => $this->image_url_from_row( $option, 'image' ), 'image_id' => absint( $option['image_id'] ?? 0 ), 'layer_image' => $this->image_url_from_row( $option, 'image' ), 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'enabled' => 'yes' );
 			} elseif ( 'text' === $type ) {
-				$schema['layers'][] = array( 'section' => 'text', 'id' => $id, 'title' => sanitize_text_field( $option['title'] ?? 'Product text' ), 'type' => 'text', 'enabled' => 'yes', 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'placeholder' => sanitize_text_field( $option['title'] ?? '' ) );
+				$schema['layers'][] = array( 'section' => 'text', 'id' => $id, 'title' => CWPC_Plugin::sanitize_utf8_text( $option['title'] ?? 'Product text' ), 'type' => 'text', 'enabled' => 'yes', 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'placeholder' => CWPC_Plugin::sanitize_utf8_text( $option['title'] ?? '' ) );
 			} elseif ( 'upload' === $type ) {
-				$schema['layers'][] = array( 'section' => 'upload', 'id' => $id, 'title' => sanitize_text_field( $option['title'] ?? 'Product upload' ), 'type' => 'upload', 'enabled' => 'yes', 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'allowed_types' => 'jpg,png,gif,webp', 'max_size' => 5 );
+				$schema['layers'][] = array( 'section' => 'upload', 'id' => $id, 'title' => CWPC_Plugin::sanitize_utf8_text( $option['title'] ?? 'Product upload' ), 'type' => 'upload', 'enabled' => 'yes', 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'allowed_types' => 'jpg,png,gif,webp', 'max_size' => 5 );
 			}
 		}
 		if ( $choice_options ) { $schema['layers'][] = array( 'section' => 'group', 'id' => 'product_options', 'title' => 'Product Options', 'type' => 'option', 'display_type' => 'buttons', 'enabled' => 'yes', 'order' => 15, 'options' => $choice_options ); }
