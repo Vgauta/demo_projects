@@ -37,3 +37,16 @@
   $(document).on('click','.cwpc-product-media',function(){let input=$(this).siblings('input').first(); if(!input.length) input=$(this).closest('.form-field').find('input').first(); let frame=wp.media({title:'Choose image',multiple:false,library:{type:'image'}}); frame.on('select',function(){input.val(frame.state().get('selection').first().toJSON().url).trigger('change');}); frame.open();});
   render();
 })(jQuery);
+
+(function($){
+  const list=$('#cwpc-dining-map-list'); if(!list.length) return;
+  function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+  function card(row={}){return `<div class="cwpc-option-card cwpc-dining-map-row"><button type="button" class="button-link-delete cwpc-remove-dining-map">Remove</button><div class="cwpc-grid"><label>Table color<input class="cwpc-map-table" value="${esc(row.table_color)}" placeholder="e.g. Oak"></label><label>Chair color<input class="cwpc-map-chair" value="${esc(row.chair_color)}" placeholder="e.g. Oak"></label><label>Preview image<input class="cwpc-map-image" value="${esc(row.image)}"> <button type="button" class="button cwpc-product-media">Choose Image</button></label></div></div>`}
+  function sync(){let rows=[];list.find('.cwpc-dining-map-row').each(function(){let el=$(this);rows.push({table_color:el.find('.cwpc-map-table').val(),chair_color:el.find('.cwpc-map-chair').val(),image:el.find('.cwpc-map-image').val()});});$('#_cwpc_dining_preview_map').val(JSON.stringify(rows));}
+  function render(){let rows=[];try{rows=JSON.parse(list.attr('data-map')||'[]')}catch(e){} list.html(rows.map(card).join(''));sync();}
+  $(document).on('click','#cwpc-add-dining-map',function(){list.append(card({}));sync();});
+  $(document).on('click','.cwpc-remove-dining-map',function(){$(this).closest('.cwpc-dining-map-row').remove();sync();});
+  $(document).on('input change','#cwpc-dining-map-list input',sync);
+  $(document).on('click','#cwpc-dining-map-list .cwpc-product-media',function(){let input=$(this).siblings('input').first(); let frame=wp.media({title:'Choose preview image',multiple:false,library:{type:'image'}}); frame.on('select',function(){input.val(frame.state().get('selection').first().toJSON().url).trigger('change');}); frame.open();});
+  render();
+})(jQuery);

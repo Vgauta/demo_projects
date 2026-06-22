@@ -1,312 +1,218 @@
-# Custom WooCommerce Product Configurator
+# Custom WooCommerce Dining Set Options
 
-Custom WooCommerce Product Configurator is a self-hosted WordPress plugin for WooCommerce stores that sell customizable products. It lets a store admin create a product configurator, attach it to a WooCommerce product, and collect the customer's selected options, colors, custom text, uploads, and preview data with the order.
+This plugin adds a simple dining set configurator to normal WooCommerce products. It is designed for stores that sell dining table sets where customers choose a table color, chair color, and extra chairs.
 
-The plugin does not require an external SaaS service.
+It is intentionally simple: the store admin manages products the normal WooCommerce way with attributes, variations, prices, and images. There is no required JSON editing and no external SaaS dependency.
 
 ---
 
-## What this plugin does
+## What the plugin does
 
-Use this plugin when customers need to personalize a product before buying it. Example use cases include:
+On a dining set product page, the plugin can show:
 
-- Shirts, uniforms, hats, bags, or mugs with color choices
-- Products with optional parts, layers, images, finishes, or styles
-- Personalized gifts with custom text
-- Products that require a customer logo or artwork upload
-- Products where some options add an extra price
+- Table Color swatches
+- Chair Color swatches
+- Extra Chairs selector
+- A product preview image
+- Dynamic extra-chair price update
 
-On the product page, the customer sees a visual configurator before the product is added to the cart. Their configuration is saved into the WooCommerce cart, checkout, and order.
+When the customer adds the product to cart, the selected table color, chair color, and extra chairs are saved with the cart item and later with the WooCommerce order.
 
 ---
 
 ## WooCommerce requirement
 
-WooCommerce must be installed and active for product-page display, Add to Cart, cart, checkout, and order saving to work.
+WooCommerce must be installed and active.
 
-If WooCommerce is inactive, the plugin will not crash the site. It shows an admin notice and disables WooCommerce-specific features until WooCommerce is active again.
+The recommended product type is a normal **Variable Product** because the client can use standard WooCommerce attributes and variations.
 
 ---
 
-## Installation steps
+## Installation and activation
 
-1. Upload the plugin folder to:
-   `wp-content/plugins/custom-woocommerce-product-configurator/`
+1. Upload the plugin folder to `wp-content/plugins/custom-woocommerce-product-configurator/`.
 2. Go to **WordPress Admin → Plugins → Installed Plugins**.
 3. Find **Custom WooCommerce Product Configurator**.
 4. Click **Activate**.
-5. Make sure **WooCommerce** is also installed and active.
+5. Confirm WooCommerce is active.
 
 ---
 
-## Activation steps
+## Recommended product setup
 
-After activation, WordPress should show this onboarding message:
+Create dining sets as normal WooCommerce variable products.
 
-> Go to Configurators to create your first configurator.
+1. Go to **Products → Add New** or edit an existing dining set product.
+2. Set **Product data** to **Variable product**.
+3. Add attributes such as:
+   - `Table Color`
+   - `Chair Color`
+   - `Chair Quantity` or `Extra Chairs`
+   - `Table Size` if needed
+4. Check **Used for variations** for attributes that should create variations.
+5. Create variations normally.
+6. Set normal WooCommerce prices and images as needed.
 
-Click the link in that notice, or go manually to **WordPress Admin → Configurators**.
-
----
-
-## Where the settings appear
-
-The plugin has two main admin areas:
-
-### 1. Configurator templates
-
-Go to **WordPress Admin → Configurators**.
-
-This is where you create reusable configurator templates with the **Visual Builder**. A template can contain preview layers, option groups, text fields, upload fields, prices, and conditional logic.
-
-### 2. WooCommerce product settings
-
-Go to **Products → Edit Product → Product Data → Configurator**.
-
-This is where you enable the configurator for a specific WooCommerce product, select the template, set quantity rules, choose the display position, and add product-specific option images/layers if needed.
+The plugin reads the product attributes and provides a friendlier dining set selection UI on the product page.
 
 ---
 
-## How to create or edit a configurator template
+## Dining Set Options tab
 
-1. Go to **WordPress Admin → Configurators**.
-2. Click **Add Configurator** or edit an existing configurator.
-3. Enter a clear title, for example **Custom Shirt Builder**.
-4. Use the default **Visual Builder** tab.
-5. Click **Add Layer** for product preview layers.
-6. Click **Add Option Group** for customer choices like color, size, finish, or material.
-7. Inside an option group, click **Add Option** for each selectable choice.
-8. Click **Add Text Field** if the customer should enter custom text.
-9. Click **Add Upload Field** if the customer should upload a logo or artwork.
-10. Use **Choose Image** to select images from the WordPress Media Library.
-11. Use the color picker for color choices.
-12. Add price adjustments where needed.
-13. Click **Publish** or **Update**.
+After activation, edit a WooCommerce product and go to:
 
-Normal store admins should not edit JSON. The **Advanced JSON** tab is only for developers.
+**Product → Edit Product → Product Data → Dining Set Options**
 
----
+Fields in this tab:
 
-## Detailed guide: Add New Configurator screen
+1. **Enable Dining Set Configurator**  
+   Turns the dining set UI on for this product.
 
-### Product Preview Layers
+2. **Base set includes number of chairs**  
+   Default is `6`. Example: a table set includes 6 chairs before any extras.
 
-Preview layers control what appears in the live product preview.
+3. **Extra chair price**  
+   Price added for each extra chair selected by the customer.
 
-1. Click **Add Layer**.
-2. Enter **Layer title**, for example `Base Shirt Image`.
-3. Leave **Layer ID** empty unless your developer gave you a specific ID.
-4. Choose a **Layer type**: image, color, text, or upload.
-5. Click **Choose Image** to select the layer image.
-6. Set **Sort order**. Lower numbers appear earlier.
-7. Keep **Enabled** checked.
+4. **Sync chair color with table color by default**  
+   If enabled, choosing a table color automatically chooses the same chair color.
 
-### Option Groups
+5. **Hide Chair Color field unless “Different chair color” is selected**  
+   Keeps the frontend simpler unless the customer wants a different chair color.
 
-Option groups are sets of choices customers can select.
+6. **Product preview image mapping**  
+   Add rows that connect:
+   - Table color
+   - Chair color
+   - Preview image
 
-1. Click **Add Option Group**.
-2. Enter **Group title**, for example `Choose Color`.
-3. Leave **Group ID** empty to auto-generate it.
-4. Choose **Display type**: buttons, color swatches, image swatches, or dropdown.
-5. Check **Required** if customers must select an option.
-6. Set **Sort order**.
-7. Keep **Enabled** checked.
-
-### Options inside a group
-
-1. Click **Add Option**.
-2. Enter **Option label**, for example `Black`.
-3. Leave **Option ID** empty to auto-generate it.
-4. Pick a color if this is a color option.
-5. Select **Option image** if you want a thumbnail.
-6. Select **Layer image** if this option should change the preview.
-7. Add **Price adjustment** if this option costs extra.
-8. Check **Default selected** if it should be preselected.
-9. Keep **Enabled** checked.
-
-### Text fields
-
-1. Click **Add Text Field**.
-2. Enter the field label, for example `Name on product`.
-3. Add placeholder text.
-4. Set maximum length.
-5. Add a price adjustment if custom text costs extra.
-6. Check **Required** if needed.
-
-### Upload fields
-
-1. Click **Add Upload Field**.
-2. Enter the field label, for example `Upload Logo`.
-3. Set allowed file types, for example `jpg,png,webp`.
-4. Set the maximum file size in MB.
-5. Add a price adjustment if upload costs extra.
-6. Check **Required** if needed.
+Use the same color names as the WooCommerce attributes, for example `Oak`, `Black`, `Walnut`, or `White`.
 
 ---
 
-## How to connect a configurator to a WooCommerce product
+## Client workflow: create a dining set product
 
-Use this exact flow:
-
-**Product → Edit Product → Product Data → Configurator tab → Enable Configurator → Select Configurator → Update**
-
-Step by step:
-
-1. Go to **Products → All Products**.
-2. Edit the product you want to customize.
-3. Scroll to the **Product Data** box.
-4. Open the **Configurator** tab.
-5. Tick **Enable Configurator**.
-6. In **Starting Point / Configurator Template**, select the configurator template.
-7. Optional: add a manual template code/ID only if your developer asks for it.
-8. Set **Beginning Quantity**. Default is `1`.
-9. Optional: set **Minimum Quantity**, **Maximum Quantity**, and **Increment Step Quantity**.
-10. Optional: enable **Require Complete Configuration**.
-11. Optional: enable **Hide Default Add To Cart Until Ready**.
-12. Choose **Configurator Position**. Recommended default: **Before add to cart button**.
-13. Optional: choose a **Product Base Preview Image**.
-14. Optional: add product-specific option images/layers.
-15. Click **Update**.
-16. Open the product page on the frontend and confirm the configurator appears.
+1. Go to **Products → Add New**.
+2. Add product title, description, main image, and gallery.
+3. Set **Product data** to **Variable product**.
+4. Add product attributes such as **Table Color** and **Chair Color**.
+5. Create variations normally.
+6. Open **Product Data → Dining Set Options**.
+7. Check **Enable Dining Set Configurator**.
+8. Set **Base set includes number of chairs**. Usually `6`.
+9. Set **Extra chair price**.
+10. Choose whether chair color should sync with table color.
+11. Add preview image mapping rows.
+12. Click **Update**.
+13. Open the product page and test the frontend selector.
 
 ---
 
-## How customers see it on the frontend
+## Frontend customer flow
 
-On a product with the configurator enabled, customers can:
+On the product page, the customer can:
 
-1. See the preview area.
-2. Select options, colors, images, or product parts.
-3. Enter custom text.
-4. Upload a logo or image if upload fields are enabled.
-5. See the option price total update.
-6. Reset the configuration if needed.
-7. Add the configured product to the cart.
+1. Choose a table color.
+2. Choose a chair color, or keep it synced with the table color.
+3. Select extra chairs.
+4. See the preview image update.
+5. See the extra-chair price update.
+6. Add the configured product to cart.
 
-By default, the configurator appears before the Add to Cart button when the product setting is set to **Before add to cart button**.
-
----
-
-## Cart, checkout, and order saving
-
-When the customer adds the product to the cart, the plugin saves the configuration data with the WooCommerce cart item.
-
-The cart and checkout can show:
-
-- Selected options
-- Custom text
-- Uploaded file links
-- Preview image link if available
-- Option-based price adjustment
-
-When the order is placed, the plugin saves the full configuration as WooCommerce order item meta.
+The normal WooCommerce variation form still exists, so product attributes and variations remain close to standard WooCommerce behavior.
 
 ---
 
-## How admin can view customization in WooCommerce order
+## Cart, checkout, and order data
+
+When the product is added to cart, the plugin stores the dining set choices in cart item data:
+
+- Table Color
+- Chair Color
+- Extra Chairs
+- Extra-chair price adjustment
+- Preview image URL when available
+
+At checkout, this data remains attached to the line item. After purchase, it is saved as WooCommerce order item meta.
+
+---
+
+## How admin views customization in an order
 
 1. Go to **WooCommerce → Orders**.
 2. Open the order.
-3. Find the configured product line item.
-4. Expand or review the product item details/meta.
-5. Look for configurator details such as selected options, custom text, upload links, preview link, and full configuration data.
+3. Find the dining set product line item.
+4. Review the item meta/details.
+5. You should see the selected table color, chair color, extra chairs, and preview link if available.
 
 ---
 
 ## Shortcode fallback
 
-If your theme does not show the selected WooCommerce hook correctly, you can render the configurator manually with a shortcode.
-
-Basic shortcode:
+The old shortcode renderer still exists for compatibility:
 
 ```text
 [cwpc_configurator product_id="123"]
 ```
 
-Shortcode with a specific configurator template:
-
-```text
-[cwpc_configurator product_id="123" configurator_id="456"]
-```
-
-Replace `123` with the WooCommerce product ID and `456` with the configurator template ID.
-
-If you set the product's **Configurator Position** to **Shortcode only**, use this shortcode in the product description, a page builder, or a custom template location.
+For the simplified dining set flow, the recommended setup is the normal product page with **Product Data → Dining Set Options** enabled.
 
 ---
 
 ## Troubleshooting
 
-### Configurator selected but not showing on frontend
+### Dining set options do not show on the product page
 
-Check these items first:
+Check:
 
 1. WooCommerce is active.
-2. The product is a WooCommerce product and is published.
-3. Go to **Products → Edit Product → Product Data → Configurator**.
-4. Confirm **Enable Configurator** is checked.
-5. Confirm a template is selected in **Starting Point / Configurator Template**, or product-level options/layers exist.
-6. Confirm **Configurator Position** is not set to **Shortcode only** unless you are using the shortcode.
-7. Click **Update** on the product after making changes.
-8. Clear any cache plugin and browser cache.
-9. Open the single product page again.
-10. If the theme does not output the selected WooCommerce hook, set the position to **Before add to cart button** or use the shortcode fallback.
+2. Product is published.
+3. Product is a WooCommerce product, preferably a variable product.
+4. Product has attributes such as `Table Color` and `Chair Color`.
+5. Go to **Product Data → Dining Set Options**.
+6. Confirm **Enable Dining Set Configurator** is checked.
+7. Click **Update**.
+8. Clear cache and reload the product page.
 
-If `WP_DEBUG` is enabled, the plugin writes safe debug messages to the PHP error log with the enabled value, selected configurator ID, selected hook, and whether schema data was found.
+### Swatches are empty
 
-### The Visual Builder buttons do not respond
+The plugin reads product attributes. Make sure the product has attributes named clearly, for example:
 
-1. Hard refresh the WordPress admin page.
-2. Clear cache/minification plugins for admin scripts.
-3. Confirm JavaScript is enabled in the browser.
-4. Check whether another admin plugin is blocking WordPress media or color picker scripts.
+- Table Color
+- Chair Color
 
-### Images do not appear in the preview
+Also make sure the attributes have values.
 
-1. Make sure the image URL is saved.
-2. Use images from the WordPress Media Library when possible.
-3. For best results, use transparent PNG/SVG layers.
-4. Clear frontend cache.
+### Preview image does not change
 
-### Price adjustment does not look correct
+Check the **Product preview image mapping** rows:
 
-1. Check each option's price adjustment in the Visual Builder.
-2. Update the configurator template.
-3. Update the product.
-4. Re-test with a new cart session.
+1. Table color should match the attribute value.
+2. Chair color should match the attribute value.
+3. Preview image should be selected from the Media Library.
+4. Update the product after changing mappings.
 
-### Upload field does not accept a file
+### Extra chair price does not update
 
-1. Confirm the file type is allowed.
-2. Confirm the file size is below the configured maximum.
-3. Confirm WordPress uploads are working on the site.
+Check **Extra chair price** in **Product Data → Dining Set Options**. Then test with a fresh cart.
 
 ---
 
 ## Screenshots placeholder section
 
-Add real screenshots here after installing the plugin on the client site.
+Add screenshots after installing on the client site:
 
-1. **Screenshot 1: Configurator list** — WordPress admin list of configurator templates.
-2. **Screenshot 2: Create configurator screen** — Visual Builder with layers and option groups.
-3. **Screenshot 3: Product link setting** — Product Data → Configurator tab.
-4. **Screenshot 4: Frontend product configurator** — Product page with preview and options.
-5. **Screenshot 5: Order customization details** — WooCommerce order item meta with selected options.
+1. **Screenshot 1:** Variable product attributes for Table Color and Chair Color
+2. **Screenshot 2:** Product Data → Dining Set Options tab
+3. **Screenshot 3:** Preview image mapping rows
+4. **Screenshot 4:** Frontend table/chair color swatches
+5. **Screenshot 5:** WooCommerce order item meta with selected dining set options
 
 ---
 
 ## Notes for client/store admin
 
-- Start with one simple configurator and one test product.
-- Test the full flow: product page → cart → checkout → order admin.
-- Use the **Visual Builder** for normal work.
-- Do not edit the **Advanced JSON** tab unless a developer asks you to.
-- If the configurator does not appear, first check the product's **Product Data → Configurator** tab.
-- Keep image files optimized for faster product page loading.
-
----
-
-## Advanced developer section
-
-Configurator data is stored internally as JSON in post meta so developers can extend or migrate it later. This is not required for normal client use.
+- Use normal WooCommerce attributes and variations.
+- Keep color names consistent between attributes and preview mapping rows.
+- Start with one dining set product and test the full purchase flow.
+- Avoid editing advanced/developer configurator data unless a developer asks you to.

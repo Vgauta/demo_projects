@@ -11,3 +11,18 @@ $('.cwpc-configurator').each(function(){
  root.on('change','input[type=radio],select[name^=cwpc_]',function(){state[this.name.replace('cwpc_','')]=this.value; renderFields(); draw();}); root.on('input','[data-text]',function(){state[$(this).data('text')]=this.value; draw();}); root.on('change','[data-upload]',function(){let f=this.files[0]; if(!f||!/^image\//.test(f.type)||f.size>(Number($(this).data('max-size')||5)*1024*1024)){alert('Please choose an image under 5MB.'); this.value=''; return;} state[$(this).data('upload')]=f.name; draw();}); layers.forEach(l=>{let d=(l.options||[]).find(o=>o.enabled!=='no'&&o.default==='yes'); if(d) state[l.id]=d.id;}); root.find('.cwpc-reset').on('click',()=>{state={}; layers.forEach(l=>{let d=(l.options||[]).find(o=>o.enabled!=='no'&&o.default==='yes'); if(d) state[l.id]=d.id;}); renderFields(); draw();}); renderFields(); draw();
 });
 })(jQuery);
+
+(function($){
+$('.cwpc-dining-configurator').each(function(){
+ const root=$(this), cfg=root.data('config')||{}, state={table:(cfg.tableColors||[])[0]||'', chair:(cfg.chairColors||[])[0]||'', extra:0};
+ const price=Number(cfg.extraChairPrice||0), sync=cfg.syncChairColor!=='no'; if(sync) state.chair=state.table;
+ function swatches(values, cls, selected){return `<strong>${cls==='table'?'Table Color':'Chair Color'}</strong>`+(values||[]).map(v=>`<button type="button" class="cwpc-swatch ${selected===v?'active':''}" data-kind="${cls}" data-value="${v}">${v}</button>`).join('')}
+ function preview(){let row=(cfg.previewMap||[]).find(r=>r.table_color===state.table&&r.chair_color===state.chair)||(cfg.previewMap||[]).find(r=>r.table_color===state.table)||{}; root.find('.cwpc-dining-preview img').attr('src',row.image||'').toggle(!!row.image); root.find('.cwpc-preview-image').val(row.image||'');}
+ function syncVariation(kind,value){let form=root.closest('form.variations_form'); form.find('select').each(function(){let sel=$(this); sel.find('option').each(function(){if($(this).text()===value||$(this).val()===value){sel.val($(this).val()).trigger('change');}});});}
+ function render(){root.find('.cwpc-table-colors').html(swatches(cfg.tableColors,'table',state.table)); root.find('.cwpc-chair-colors').html(swatches(cfg.chairColors||cfg.tableColors,'chair',state.chair)); root.find('.cwpc-chair-colors').toggle(!(cfg.hideChairColorUntilDifferent==='yes'&&!root.find('.cwpc-different-chair').is(':checked'))); root.find('.cwpc-dining-price').text(state.extra?`Extra chairs: ${state.extra} × ${price.toFixed(2)} = ${(state.extra*price).toFixed(2)}`:''); root.find('.cwpc-configuration').val(JSON.stringify({summary:[{label:'Table Color',value:state.table},{label:'Chair Color',value:state.chair},{label:'Extra Chairs',value:String(state.extra)}],selections:state,priceAdjustment:state.extra*price})); preview();}
+ root.on('click','.cwpc-swatch',function(){let kind=$(this).data('kind'), val=$(this).data('value'); state[kind]=val; if(kind==='table'&&sync&&!root.find('.cwpc-different-chair').is(':checked')) state.chair=val; syncVariation(kind,val); render();});
+ root.on('change','.cwpc-different-chair',function(){if(!this.checked&&sync) state.chair=state.table; render();});
+ root.on('input change','.cwpc-extra-chairs',function(){state.extra=Math.max(0,parseInt(this.value,10)||0); render();});
+ render();
+});
+})(jQuery);

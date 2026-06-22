@@ -7,6 +7,7 @@ class CWPC_Frontend {
 	public function hook_product() {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
 		$product_id = get_queried_object_id();
+		if ( $product_id && 'yes' === get_post_meta( $product_id, '_cwpc_dining_enabled', true ) ) { wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' ); add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'render_dining_product' ), 5 ); return; }
 		if ( ! $product_id || ! $this->is_enabled( $product_id ) ) { $this->debug( 'Configurator not attached: disabled or missing product.', $product_id ); return; }
 		$configurator_id = (int) get_post_meta( $product_id, '_cwpc_configurator_id', true );
 		$position = get_post_meta( $product_id, '_cwpc_position', true );
@@ -28,6 +29,37 @@ class CWPC_Frontend {
 	private function debug( $message, $product_id = 0, $context = array() ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) { error_log( '[CWPC] ' . $message . ' product_id=' . absint( $product_id ) . ' context=' . wp_json_encode( $context ) ); }
 	}
+	public function render_dining_product() { global $product; $product_id = $product ? $product->get_id() : get_queried_object_id(); if ( $product_id ) { echo $this->render_dining( $product_id ); } }
+	private function attribute_values( $product, $needle ) {
+		$values = array();
+		foreach ( $product->get_attributes() as $attribute ) {
+			$label = wc_attribute_label( $attribute->get_name() );
+			if ( false === stripos( $label, $needle ) ) { continue; }
+			if ( $attribute->is_taxonomy() ) {
+				foreach ( wc_get_product_terms( $product->get_id(), $attribute->get_name(), array( 'fields' => 'names' ) ) as $term_name ) { $values[] = $term_name; }
+			} else {
+				$values = array_merge( $values, $attribute->get_options() );
+			}
+		}
+		return array_values( array_unique( array_filter( array_map( 'wc_clean', $values ) ) ) );
+	}
+	public function render_dining( $product_id ) {
+		$product = wc_get_product( $product_id );
+		if ( ! $product || 'yes' !== get_post_meta( $product_id, '_cwpc_dining_enabled', true ) ) { return ''; }
+		$table_colors = $this->attribute_values( $product, 'table color' );
+		$chair_colors = $this->attribute_values( $product, 'chair color' );
+		$map = json_decode( get_post_meta( $product_id, '_cwpc_dining_preview_map', true ), true );
+		if ( ! is_array( $map ) ) { $map = array(); }
+		$config = array( 'tableColors' => $table_colors, 'chairColors' => $chair_colors ?: $table_colors, 'baseChairs' => absint( get_post_meta( $product_id, '_cwpc_base_chairs', true ) ) ?: 6, 'extraChairPrice' => (float) get_post_meta( $product_id, '_cwpc_extra_chair_price', true ), 'syncChairColor' => get_post_meta( $product_id, '_cwpc_sync_chair_color', true ) ?: 'yes', 'hideChairColorUntilDifferent' => get_post_meta( $product_id, '_cwpc_hide_chair_color_until_different', true ), 'previewMap' => $map );
+		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
+		ob_start(); ?>
+		<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $config ) ); ?>'>
+			<div class="cwpc-dining-preview"><img alt="Dining set preview" src=""></div>
+			<div class="cwpc-dining-fields"><div class="cwpc-table-colors"></div><label class="cwpc-different-chair-wrap"><input type="checkbox" class="cwpc-different-chair"> <?php esc_html_e( 'Different chair color', 'custom-wc-product-configurator' ); ?></label><div class="cwpc-chair-colors"></div><label><?php esc_html_e( 'Extra chairs', 'custom-wc-product-configurator' ); ?> <input type="number" min="0" step="1" class="cwpc-extra-chairs" value="0"></label><div class="cwpc-dining-price"></div></div>
+			<input type="hidden" name="cwpc_configuration" class="cwpc-configuration" value=""><input type="hidden" name="cwpc_preview_image" class="cwpc-preview-image" value="">
+		</div><?php return ob_get_clean();
+	}
+
 	public function render_product() { global $product; $product_id = $product ? $product->get_id() : get_queried_object_id(); if ( $product_id ) { echo $this->render( $product_id, (int) get_post_meta( $product_id, '_cwpc_configurator_id', true ) ); } }
 	public function shortcode( $atts ) { $atts = shortcode_atts( array( 'product_id' => get_the_ID(), 'configurator_id' => 0 ), $atts ); return $this->render( absint( $atts['product_id'] ), absint( $atts['configurator_id'] ) ); }
 	public function render( $product_id, $configurator_id = 0 ) {
