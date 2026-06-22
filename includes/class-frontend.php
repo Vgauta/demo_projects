@@ -48,6 +48,7 @@ class CWPC_Frontend {
 		if ( ! $product || 'yes' !== get_post_meta( $product_id, '_cwpc_dining_enabled', true ) ) { return ''; }
 		$schema = json_decode( get_post_meta( $product_id, '_cwpc_dining_schema', true ), true );
 		if ( ! is_array( $schema ) ) { $schema = CWPC_Plugin::default_dining_schema(); }
+		$product_image = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'large' ) : '';
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		ob_start(); ?>
 		<div class="cwpc-dining-launch"><button type="button" class="button alt cwpc-open-dining-modal">Customize &amp; Add to Cart</button></div>
@@ -56,7 +57,7 @@ class CWPC_Frontend {
 			<div class="cwpc-dining-modal__dialog" role="dialog" aria-modal="true" aria-label="Dining set configurator">
 				<button type="button" class="cwpc-dining-modal__close" aria-label="Close" data-cwpc-close="1">&times;</button>
 				<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>'>
-					<div class="cwpc-dining-preview"><img alt="Dining set preview" src=""></div>
+					<div class="cwpc-dining-preview"><img class="cwpc-preview-layer cwpc-table-layer" alt="Table preview" src="" data-product-image="<?php echo esc_url( $product_image ); ?>"><img class="cwpc-preview-layer cwpc-chair-layer" alt="Chair preview" src=""></div>
 					<div class="cwpc-dining-fields">
 						<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
 						<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>

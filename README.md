@@ -103,7 +103,7 @@ For each chair design, the client can edit:
 
 - Chair design name
 - Thumbnail image
-- Preview image
+- Default chair preview image
 - Price adjustment
 - Available chair colors for that design
 
@@ -125,6 +125,16 @@ For each chair color, the client can edit:
 - Chair preview image
 
 Chair color swatches show only when the customer selects **Choose different chair color**.
+
+### Chair color images per design
+
+For exact chair previews, the client can map:
+
+- Chair design
+- Chair color
+- Chair preview image
+
+If no exact design/color image is provided, the frontend falls back to the chair design default image.
 
 ### 5. Addons
 
@@ -171,7 +181,7 @@ When the customer adds the product to cart, the plugin saves:
 - Chair Color if different
 - Addons
 - Price adjustment
-- Preview image URL when available
+- Preview layer image URLs when available
 
 This data appears in cart/checkout item data and is saved to WooCommerce order item meta.
 

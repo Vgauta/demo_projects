@@ -90,6 +90,7 @@ final class CWPC_Plugin {
 				array( 'name' => 'Green', 'color' => '#4f7f52', 'price' => 0, 'preview' => '' ),
 				array( 'name' => 'Light Grey', 'color' => '#c9c9c9', 'price' => 0, 'preview' => '' ),
 			),
+			'chair_color_images' => array(),
 			'addons' => array(
 				array( 'name' => 'Chair cushion', 'price' => 0, 'enabled' => 'yes' ),
 				array( 'name' => 'Waterproof cover', 'price' => 0, 'enabled' => 'yes' ),
