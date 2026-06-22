@@ -6,7 +6,10 @@ class CWPC_Cart {
 		if ( empty( $_POST['cwpc_configuration'] ) ) { return $cart_item_data; }
 		$config = json_decode( wp_unslash( $_POST['cwpc_configuration'] ), true ); if ( ! is_array( $config ) ) { return $cart_item_data; }
 		$cart_item_data['cwpc_configuration'] = $this->sanitize_config( $config );
-		$cart_item_data['cwpc_price_adjustment'] = (float) ( $cart_item_data['cwpc_configuration']['priceAdjustment'] ?? 0 );
+		$product = wc_get_product( $variation_id ?: $product_id );
+		$cart_item_data['cwpc_base_price'] = $product ? (float) $product->get_price( 'edit' ) : 0;
+		$cart_item_data['cwpc_extra_price'] = (float) ( $cart_item_data['cwpc_configuration']['priceAdjustment'] ?? 0 );
+		$cart_item_data['cwpc_price_adjustment'] = $cart_item_data['cwpc_extra_price'];
 		$cart_item_data['cwpc_preview_image'] = esc_url_raw( wp_unslash( $_POST['cwpc_preview_image'] ?? '' ) );
 		$cart_item_data['cwpc_uploads'] = $this->handle_uploads();
 		$cart_item_data['unique_key'] = md5( wp_json_encode( $cart_item_data['cwpc_configuration'] ) . microtime() );
@@ -34,5 +37,5 @@ class CWPC_Cart {
 		if ( ! empty( $cart_item['cwpc_preview_image'] ) ) { $item_data[] = array( 'name' => __( 'Preview', 'custom-wc-product-configurator' ), 'value' => '<a href="' . esc_url( $cart_item['cwpc_preview_image'] ) . '" target="_blank">View preview</a>' ); }
 		return $item_data;
 	}
-	public function price( $cart ) { if ( is_admin() && ! defined( 'DOING_AJAX' ) ) { return; } foreach ( $cart->get_cart() as $item ) { if ( isset( $item['cwpc_price_adjustment'] ) ) { $item['data']->set_price( (float) $item['data']->get_price( 'edit' ) + (float) $item['cwpc_price_adjustment'] ); } } }
+	public function price( $cart ) { if ( is_admin() && ! defined( 'DOING_AJAX' ) ) { return; } foreach ( $cart->get_cart() as $item ) { if ( isset( $item['cwpc_extra_price'] ) ) { $base = isset( $item['cwpc_base_price'] ) ? (float) $item['cwpc_base_price'] : (float) $item['data']->get_price( 'edit' ); $item['data']->set_price( $base + (float) $item['cwpc_extra_price'] ); } } }
 }

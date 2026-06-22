@@ -12,7 +12,7 @@ class CWPC_Post_Types {
 			),
 			'public' => false,
 			'show_ui' => true,
-			'show_in_menu' => false,
+			'show_in_menu' => true,
 			'menu_icon' => 'dashicons-art',
 			'supports' => array( 'title' ),
 			'capability_type' => 'post',
