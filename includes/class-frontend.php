@@ -4,14 +4,41 @@ class CWPC_Frontend {
 	public function __construct() {
 		add_action( 'wp', array( $this, 'hook_product' ) ); add_shortcode( 'cwpc_configurator', array( $this, 'shortcode' ) ); add_action( 'wp_ajax_cwpc_upload_preview', array( $this, 'upload_preview' ) ); add_action( 'wp_ajax_nopriv_cwpc_upload_preview', array( $this, 'upload_preview' ) );
 	}
-	public function hook_product() { if ( is_product() ) { global $post; if ( $post && 'yes' === get_post_meta( $post->ID, '_cwpc_enabled', true ) ) { $position = get_post_meta( $post->ID, '_cwpc_position', true ) ?: 'woocommerce_before_add_to_cart_button'; if ( 'shortcode_only' !== $position ) { add_action( $position, array( $this, 'render_product' ), 5 ); } } } }
-	public function render_product() { global $product; if ( $product ) { echo $this->render( $product->get_id(), (int) get_post_meta( $product->get_id(), '_cwpc_configurator_id', true ) ); } }
+	public function hook_product() {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
+		$product_id = get_queried_object_id();
+		if ( ! $product_id || ! $this->is_enabled( $product_id ) ) { $this->debug( 'Configurator not attached: disabled or missing product.', $product_id ); return; }
+		$configurator_id = (int) get_post_meta( $product_id, '_cwpc_configurator_id', true );
+		$position = get_post_meta( $product_id, '_cwpc_position', true );
+		if ( empty( $position ) ) { $position = 'woocommerce_before_add_to_cart_button'; }
+		$allowed = array( 'woocommerce_before_add_to_cart_button', 'woocommerce_after_add_to_cart_button', 'woocommerce_before_single_product_summary', 'woocommerce_after_single_product_summary', 'shortcode_only' );
+		if ( ! in_array( $position, $allowed, true ) ) { $position = 'woocommerce_before_add_to_cart_button'; }
+		$this->debug( 'Configurator attach check.', $product_id, array( 'enabled' => get_post_meta( $product_id, '_cwpc_enabled', true ), 'configurator_id' => $configurator_id, 'hook' => $position ) );
+		if ( ! $this->has_renderable_config( $product_id, $configurator_id ) ) { $this->debug( 'Configurator not attached: no template or product-level options found.', $product_id ); return; }
+		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
+		if ( 'shortcode_only' !== $position ) { add_action( $position, array( $this, 'render_product' ), 5 ); }
+	}
+	private function is_enabled( $product_id ) { return in_array( get_post_meta( $product_id, '_cwpc_enabled', true ), array( 'yes', '1', 1, true, 'on' ), true ); }
+	private function has_renderable_config( $product_id, $configurator_id ) {
+		if ( $configurator_id && 'cwpc_configurator' === get_post_type( $configurator_id ) ) { return true; }
+		if ( get_post_meta( $product_id, '_cwpc_base_preview_image', true ) ) { return true; }
+		$options = json_decode( get_post_meta( $product_id, '_cwpc_product_options', true ), true );
+		return is_array( $options ) && ! empty( $options );
+	}
+	private function debug( $message, $product_id = 0, $context = array() ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) { error_log( '[CWPC] ' . $message . ' product_id=' . absint( $product_id ) . ' context=' . wp_json_encode( $context ) ); }
+	}
+	public function render_product() { global $product; $product_id = $product ? $product->get_id() : get_queried_object_id(); if ( $product_id ) { echo $this->render( $product_id, (int) get_post_meta( $product_id, '_cwpc_configurator_id', true ) ); } }
 	public function shortcode( $atts ) { $atts = shortcode_atts( array( 'product_id' => get_the_ID(), 'configurator_id' => 0 ), $atts ); return $this->render( absint( $atts['product_id'] ), absint( $atts['configurator_id'] ) ); }
 	public function render( $product_id, $configurator_id = 0 ) {
+		if ( ! $product_id || ! $this->is_enabled( $product_id ) ) { return ''; }
 		if ( ! $configurator_id ) { $configurator_id = (int) get_post_meta( $product_id, '_cwpc_configurator_id', true ); }
-		$schema = $configurator_id ? json_decode( get_post_meta( $configurator_id, '_cwpc_schema', true ), true ) : array( 'layers' => array() ); if ( ! $schema ) { $schema = CWPC_Plugin::default_schema(); }
+		if ( ! $this->has_renderable_config( $product_id, $configurator_id ) ) { return ''; }
+		$schema = $configurator_id ? json_decode( get_post_meta( $configurator_id, '_cwpc_schema', true ), true ) : array( 'layers' => array() ); if ( ! $schema ) { $schema = array( 'layers' => array() ); }
 		$schema = $this->merge_product_schema( $schema, $product_id );
+		if ( empty( $schema['layers'] ) ) { $this->debug( 'Configurator render skipped: schema loaded but has no layers.', $product_id, array( 'configurator_id' => $configurator_id ) ); return ''; }
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
+		$this->debug( 'Configurator rendered.', $product_id, array( 'configurator_id' => $configurator_id, 'layers' => count( $schema['layers'] ) ) );
 		ob_start(); ?>
 		<div class="cwpc-configurator" data-schema='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>' data-product-id="<?php echo esc_attr( $product_id ); ?>" data-hide-add-to-cart="<?php echo esc_attr( get_post_meta( $product_id, '_cwpc_hide_add_to_cart', true ) ); ?>">
 			<div class="cwpc-preview"><canvas width="720" height="520" aria-label="Product preview"></canvas></div>
