@@ -77,7 +77,10 @@ Use this workflow for every dining table product:
 6. Click **Load Default Dining Set Template**.
 7. Replace names, colors, images, and prices as needed.
 8. Click **Update**.
-9. Open the product page and test the configurator.
+9. On the frontend, the customer clicks **Customize & Add to Cart**.
+10. The popup opens.
+11. Customer configures the dining set.
+12. Customer adds the product to cart from inside the popup.
 
 ---
 
@@ -135,21 +138,25 @@ For each addon, the client can edit:
 
 ## Frontend customer flow
 
-The product page shows a simple two-column layout:
+The product page shows one clean **Customize & Add to Cart** button when the configurator is enabled. Clicking it opens a popup.
+
+Inside the popup:
 
 - **Left side:** large live preview area
 - **Right side:** numbered step-by-step options panel
+- The actual Add to Cart action is inside the popup
 
 The customer flow is:
 
-1. Choose table color.
-2. Choose chair design.
-3. Choose extra chairs.
-4. Choose whether chair color is the same as table color or different.
-5. If different, choose chair color.
-6. Choose addons.
-7. Review live price update.
-8. Add to cart.
+1. Click **Customize & Add to Cart**.
+2. Choose table color.
+3. Choose chair design.
+4. Choose extra chairs.
+5. Choose whether chair color is the same as table color or different.
+6. If different, choose chair color.
+7. Choose addons.
+8. Review live price update.
+9. Add to cart from inside the popup.
 
 ---
 
@@ -213,8 +220,9 @@ Add screenshots after installation:
 1. Product Data → Dining Set Configurator tab
 2. Load Default Dining Set Template button
 3. Table color and chair design admin fields
-4. Frontend live preview and numbered steps
-5. WooCommerce order item customization details
+4. Frontend Customize & Add to Cart button
+5. Popup live preview and numbered steps
+6. WooCommerce order item customization details
 
 ---
 

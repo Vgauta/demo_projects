@@ -50,18 +50,26 @@ class CWPC_Frontend {
 		if ( ! is_array( $schema ) ) { $schema = CWPC_Plugin::default_dining_schema(); }
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		ob_start(); ?>
-		<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>'>
-			<div class="cwpc-dining-preview"><img alt="Dining set preview" src=""></div>
-			<div class="cwpc-dining-fields">
-				<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
-				<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>
-				<div class="cwpc-step" data-step="3"><h4>3. Extra Chairs</h4><select class="cwpc-extra-chairs"></select></div>
-				<div class="cwpc-step" data-step="4"><h4>4. Chair Color</h4><div class="cwpc-chair-mode"><button type="button" class="cwpc-mode active" data-mode="same">Same as table color</button><button type="button" class="cwpc-mode" data-mode="different">Choose different chair color</button></div></div>
-				<div class="cwpc-step cwpc-chair-color-step" data-step="5"><h4>5. Choose Chair Color</h4><div class="cwpc-chair-colors"></div></div>
-				<div class="cwpc-step" data-step="6"><h4>6. Addons</h4><div class="cwpc-addons"></div></div>
-				<div class="cwpc-dining-price"></div>
+		<div class="cwpc-dining-launch"><button type="button" class="button alt cwpc-open-dining-modal">Customize &amp; Add to Cart</button></div>
+		<div class="cwpc-dining-modal" aria-hidden="true">
+			<div class="cwpc-dining-modal__overlay" data-cwpc-close="1"></div>
+			<div class="cwpc-dining-modal__dialog" role="dialog" aria-modal="true" aria-label="Dining set configurator">
+				<button type="button" class="cwpc-dining-modal__close" aria-label="Close" data-cwpc-close="1">&times;</button>
+				<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema ) ); ?>'>
+					<div class="cwpc-dining-preview"><img alt="Dining set preview" src=""></div>
+					<div class="cwpc-dining-fields">
+						<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
+						<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>
+						<div class="cwpc-step" data-step="3"><h4>3. Extra Chairs</h4><select class="cwpc-extra-chairs"></select></div>
+						<div class="cwpc-step" data-step="4"><h4>4. Chair Color</h4><div class="cwpc-chair-mode"><button type="button" class="cwpc-mode cwpc-active" data-mode="same">Same as table color</button><button type="button" class="cwpc-mode" data-mode="different">Choose different chair color</button></div></div>
+						<div class="cwpc-step cwpc-chair-color-step" data-step="5"><h4>5. Choose Chair Color</h4><div class="cwpc-chair-colors"></div></div>
+						<div class="cwpc-step" data-step="6"><h4>6. Addons</h4><div class="cwpc-addons"></div></div>
+						<div class="cwpc-dining-price"></div>
+						<button type="button" class="button alt cwpc-popup-add-to-cart">Add to Cart</button>
+					</div>
+					<input type="hidden" name="cwpc_configuration" class="cwpc-configuration" value=""><input type="hidden" name="cwpc_preview_image" class="cwpc-preview-image" value="">
+				</div>
 			</div>
-			<input type="hidden" name="cwpc_configuration" class="cwpc-configuration" value=""><input type="hidden" name="cwpc_preview_image" class="cwpc-preview-image" value="">
 		</div><?php return ob_get_clean();
 	}
 
