@@ -29,6 +29,42 @@ class CWPC_Frontend {
 	private function debug( $message, $product_id = 0, $context = array() ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'error_log' ) ) { error_log( '[CWPC] ' . $message . ' product_id=' . absint( $product_id ) . ' context=' . wp_json_encode( $context ) ); }
 	}
+	private function image_url_from_row( $row, $field ) {
+		$attachment_id = absint( $row[ $field . '_id' ] ?? 0 );
+		if ( $attachment_id ) {
+			$url = wp_get_attachment_image_url( $attachment_id, 'full' );
+			if ( $url ) { return $url; }
+		}
+		return esc_url_raw( $row[ $field ] ?? '' );
+	}
+	private function prepare_dining_schema( $schema ) {
+		foreach ( array( 'table_colors', 'chair_colors' ) as $section ) {
+			if ( empty( $schema[ $section ] ) || ! is_array( $schema[ $section ] ) ) { continue; }
+			foreach ( $schema[ $section ] as $index => $row ) { $schema[ $section ][ $index ]['preview'] = $this->image_url_from_row( $row, 'preview' ); }
+		}
+		if ( ! empty( $schema['chair_designs'] ) && is_array( $schema['chair_designs'] ) ) {
+			foreach ( $schema['chair_designs'] as $index => $row ) {
+				$schema['chair_designs'][ $index ]['thumbnail'] = $this->image_url_from_row( $row, 'thumbnail' );
+				$schema['chair_designs'][ $index ]['preview'] = $this->image_url_from_row( $row, 'preview' );
+			}
+		}
+		if ( ! empty( $schema['chair_color_images'] ) && is_array( $schema['chair_color_images'] ) ) {
+			foreach ( $schema['chair_color_images'] as $index => $row ) { $schema['chair_color_images'][ $index ]['preview'] = $this->image_url_from_row( $row, 'preview' ); }
+		}
+		return $schema;
+	}
+	private function prepare_generic_schema( $schema ) {
+		if ( empty( $schema['layers'] ) || ! is_array( $schema['layers'] ) ) { return $schema; }
+		foreach ( $schema['layers'] as $layer_index => $layer ) {
+			$schema['layers'][ $layer_index ]['image'] = $this->image_url_from_row( $layer, 'image' );
+			if ( empty( $layer['options'] ) || ! is_array( $layer['options'] ) ) { continue; }
+			foreach ( $layer['options'] as $option_index => $option ) {
+				$schema['layers'][ $layer_index ]['options'][ $option_index ]['image'] = $this->image_url_from_row( $option, 'image' );
+				$schema['layers'][ $layer_index ]['options'][ $option_index ]['layer_image'] = $this->image_url_from_row( $option, 'layer_image' );
+			}
+		}
+		return $schema;
+	}
 	public function render_dining_product() { global $product; $product_id = $product ? $product->get_id() : get_queried_object_id(); if ( $product_id ) { echo $this->render_dining( $product_id ); } }
 	private function attribute_values( $product, $needle ) {
 		$values = array();
@@ -48,7 +84,8 @@ class CWPC_Frontend {
 		if ( ! $product || 'yes' !== get_post_meta( $product_id, '_cwpc_dining_enabled', true ) ) { return ''; }
 		$schema = json_decode( get_post_meta( $product_id, '_cwpc_dining_schema', true ), true );
 		if ( ! is_array( $schema ) ) { $schema = CWPC_Plugin::default_dining_schema(); }
-		$product_image = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'large' ) : '';
+		$schema = $this->prepare_dining_schema( $schema );
+		$product_image = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'full' ) : '';
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		ob_start(); ?>
 		<div class="cwpc-dining-launch"><button type="button" class="button alt cwpc-open-dining-modal">Customize &amp; Add to Cart</button></div>
@@ -81,6 +118,7 @@ class CWPC_Frontend {
 		if ( ! $configurator_id ) { $configurator_id = (int) get_post_meta( $product_id, '_cwpc_configurator_id', true ); }
 		if ( ! $this->has_renderable_config( $product_id, $configurator_id ) ) { return ''; }
 		$schema = $configurator_id ? json_decode( get_post_meta( $configurator_id, '_cwpc_schema', true ), true ) : array( 'layers' => array() ); if ( ! $schema ) { $schema = array( 'layers' => array() ); }
+		$schema = $this->prepare_generic_schema( $schema );
 		$schema = $this->merge_product_schema( $schema, $product_id );
 		if ( empty( $schema['layers'] ) ) { $this->debug( 'Configurator render skipped: schema loaded but has no layers.', $product_id, array( 'configurator_id' => $configurator_id ) ); return ''; }
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
@@ -95,8 +133,9 @@ class CWPC_Frontend {
 
 	private function merge_product_schema( $schema, $product_id ) {
 		if ( empty( $schema['layers'] ) || ! is_array( $schema['layers'] ) ) { $schema['layers'] = array(); }
-		$base = get_post_meta( $product_id, '_cwpc_base_preview_image', true );
-		if ( $base ) { array_unshift( $schema['layers'], array( 'section' => 'layer', 'id' => 'product_base_preview', 'title' => 'Product Base Preview', 'type' => 'image', 'enabled' => 'yes', 'image' => esc_url_raw( $base ), 'order' => 0, 'options' => array() ) ); }
+		$base_id = absint( get_post_meta( $product_id, '_cwpc_base_preview_image_id', true ) );
+		$base = $base_id ? wp_get_attachment_image_url( $base_id, 'full' ) : get_post_meta( $product_id, '_cwpc_base_preview_image', true );
+		if ( $base ) { array_unshift( $schema['layers'], array( 'section' => 'layer', 'id' => 'product_base_preview', 'title' => 'Product Base Preview', 'type' => 'image', 'enabled' => 'yes', 'image' => esc_url_raw( $base ), 'image_id' => $base_id, 'order' => 0, 'options' => array() ) ); }
 		$options = json_decode( get_post_meta( $product_id, '_cwpc_product_options', true ), true );
 		if ( ! is_array( $options ) ) { return $schema; }
 		$choice_options = array();
@@ -105,7 +144,7 @@ class CWPC_Frontend {
 			$type = sanitize_key( $option['type'] ?? 'image' );
 			$id = 'product_option_' . $index;
 			if ( in_array( $type, array( 'color', 'image' ), true ) ) {
-				$choice_options[] = array( 'id' => $id, 'title' => sanitize_text_field( $option['title'] ?? 'Product option' ), 'label' => sanitize_text_field( $option['title'] ?? 'Product option' ), 'color' => sanitize_hex_color( $option['color'] ?? '' ), 'image' => esc_url_raw( $option['image'] ?? '' ), 'layer_image' => esc_url_raw( $option['image'] ?? '' ), 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'enabled' => 'yes' );
+				$choice_options[] = array( 'id' => $id, 'title' => sanitize_text_field( $option['title'] ?? 'Product option' ), 'label' => sanitize_text_field( $option['title'] ?? 'Product option' ), 'color' => sanitize_hex_color( $option['color'] ?? '' ), 'image' => $this->image_url_from_row( $option, 'image' ), 'image_id' => absint( $option['image_id'] ?? 0 ), 'layer_image' => $this->image_url_from_row( $option, 'image' ), 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'enabled' => 'yes' );
 			} elseif ( 'text' === $type ) {
 				$schema['layers'][] = array( 'section' => 'text', 'id' => $id, 'title' => sanitize_text_field( $option['title'] ?? 'Product text' ), 'type' => 'text', 'enabled' => 'yes', 'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'placeholder' => sanitize_text_field( $option['title'] ?? '' ) );
 			} elseif ( 'upload' === $type ) {

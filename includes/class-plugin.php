@@ -66,15 +66,15 @@ final class CWPC_Plugin {
 	public static function default_dining_schema() {
 		return array(
 			'table_colors' => array(
-				array( 'name' => 'White', 'color' => '#ffffff', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Champagne', 'color' => '#d6b98c', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'White', 'color' => '#ffffff', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Champagne', 'color' => '#d6b98c', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
 			),
 			'chair_designs' => array(
-				array( 'name' => 'Luna', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
-				array( 'name' => 'Tuna', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
-				array( 'name' => 'Sano', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
-				array( 'name' => 'X Design', 'thumbnail' => '', 'preview' => '', 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Luna', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Tuna', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Sano', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'X Design', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
 			),
 			'extra_chairs' => array(
 				array( 'label' => '6 chairs included in price', 'quantity' => 0, 'price' => 0 ),
@@ -83,12 +83,12 @@ final class CWPC_Plugin {
 				array( 'label' => 'Add 6 extra chairs', 'quantity' => 6, 'price' => 0 ),
 			),
 			'chair_colors' => array(
-				array( 'name' => 'Mixed colors', 'color' => '#d9a441', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Black', 'color' => '#000000', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Mustard', 'color' => '#d6a100', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Green', 'color' => '#4f7f52', 'price' => 0, 'preview' => '' ),
-				array( 'name' => 'Light Grey', 'color' => '#c9c9c9', 'price' => 0, 'preview' => '' ),
+				array( 'name' => 'Mixed colors', 'color' => '#d9a441', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Dark Grey', 'color' => '#4a4a4a', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Black', 'color' => '#000000', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Mustard', 'color' => '#d6a100', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Green', 'color' => '#4f7f52', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
+				array( 'name' => 'Light Grey', 'color' => '#c9c9c9', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
 			),
 			'chair_color_images' => array(),
 			'addons' => array(

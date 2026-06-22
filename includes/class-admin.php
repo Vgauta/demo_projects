@@ -52,6 +52,7 @@ class CWPC_Admin {
 				'order' => (float) ( $layer['order'] ?? 0 ),
 				'enabled' => empty( $layer['enabled'] ) ? 'no' : 'yes',
 				'image' => esc_url_raw( $layer['image'] ?? '' ),
+				'image_id' => absint( $layer['image_id'] ?? 0 ),
 				'price' => (float) ( $layer['price'] ?? 0 ),
 				'placeholder' => sanitize_text_field( $layer['placeholder'] ?? '' ),
 				'max_length' => absint( $layer['max_length'] ?? 80 ),
@@ -66,7 +67,7 @@ class CWPC_Admin {
 			foreach ( $layer['options'] ?? array() as $option ) {
 				$item['options'][] = array(
 					'id' => sanitize_key( $option['id'] ?? '' ), 'title' => sanitize_text_field( $option['title'] ?? '' ), 'label' => sanitize_text_field( $option['label'] ?? '' ),
-					'image' => esc_url_raw( $option['image'] ?? '' ), 'layer_image' => esc_url_raw( $option['layer_image'] ?? '' ), 'color' => sanitize_hex_color( $option['color'] ?? '' ),
+					'image' => esc_url_raw( $option['image'] ?? '' ), 'image_id' => absint( $option['image_id'] ?? 0 ), 'layer_image' => esc_url_raw( $option['layer_image'] ?? '' ), 'layer_image_id' => absint( $option['layer_image_id'] ?? 0 ), 'color' => sanitize_hex_color( $option['color'] ?? '' ),
 					'price' => (float) ( $option['price'] ?? 0 ), 'order' => (float) ( $option['order'] ?? 0 ), 'default' => empty( $option['default'] ) ? 'no' : 'yes', 'enabled' => empty( $option['enabled'] ) ? 'no' : 'yes',
 					'conditions' => array_map( function( $condition ) { return array( 'field' => sanitize_key( $condition['field'] ?? '' ), 'equals' => sanitize_text_field( $condition['equals'] ?? '' ) ); }, $option['conditions'] ?? array() ),
 				);

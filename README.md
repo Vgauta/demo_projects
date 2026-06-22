@@ -136,6 +136,8 @@ For exact chair previews, the client can map:
 
 If no exact design/color image is provided, the frontend falls back to the chair design default image.
 
+Image selections are saved with the WordPress Media Library attachment ID whenever possible. This keeps Hebrew and other Unicode filenames safe because the frontend asks WordPress for the final image URL instead of rebuilding URLs from filenames.
+
 ### 5. Addons
 
 For each addon, the client can edit:
