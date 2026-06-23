@@ -38,7 +38,7 @@ class CWPC_Frontend {
 		return esc_url_raw( $row[ $field ] ?? '' );
 	}
 	private function prepare_dining_schema( $schema ) {
-		foreach ( array( 'base_image', 'table_mask', 'chair_mask' ) as $field ) { $schema[ $field ] = $this->image_url_from_row( $schema, $field ); }
+		foreach ( array( 'base_image', 'table_base', 'table_mask', 'chair_mask' ) as $field ) { $schema[ $field ] = $this->image_url_from_row( $schema, $field ); }
 		foreach ( array( 'table_colors', 'chair_colors' ) as $section ) {
 			if ( empty( $schema[ $section ] ) || ! is_array( $schema[ $section ] ) ) { continue; }
 			foreach ( $schema[ $section ] as $index => $row ) { $schema[ $section ][ $index ]['preview'] = $this->image_url_from_row( $row, 'preview' ); }
@@ -46,6 +46,9 @@ class CWPC_Frontend {
 		if ( ! empty( $schema['chair_designs'] ) && is_array( $schema['chair_designs'] ) ) {
 			foreach ( $schema['chair_designs'] as $index => $row ) {
 				$schema['chair_designs'][ $index ]['thumbnail'] = $this->image_url_from_row( $row, 'thumbnail' );
+				$schema['chair_designs'][ $index ]['base'] = $this->image_url_from_row( $row, 'base' );
+				$schema['chair_designs'][ $index ]['mask'] = $this->image_url_from_row( $row, 'mask' );
+				$schema['chair_designs'][ $index ]['overlay'] = $this->image_url_from_row( $row, 'overlay' );
 				$schema['chair_designs'][ $index ]['preview'] = $this->image_url_from_row( $row, 'preview' );
 			}
 		}
@@ -89,7 +92,7 @@ class CWPC_Frontend {
 		$product_image = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'full' ) : '';
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		ob_start(); ?>
-		<div class="cwpc-dining-launch"><button type="button" class="button alt cwpc-open-dining-modal">Customize &amp; Add to Cart</button></div>
+		<div class="cwpc-dining-launch"><button type="button" class="button alt cwpc-open-dining-modal"><?php echo esc_html( $schema['button_label'] ?? 'Customize & Add to Cart' ); ?></button></div>
 		<div class="cwpc-dining-modal" aria-hidden="true">
 			<div class="cwpc-dining-modal__overlay" data-cwpc-close="1"></div>
 			<div class="cwpc-dining-modal__dialog" role="dialog" aria-modal="true" aria-label="Dining set configurator">

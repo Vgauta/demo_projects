@@ -91,14 +91,17 @@ The product edit tab lets the client edit the default template with form fields.
 
 ### Dynamic canvas recolor preview
 
-The Dining Set Configurator is not only a variation image swap. For the main preview, the client uploads one base dining-set image plus transparent PNG recolor masks for the table and chairs. The frontend canvas tints those masks from the selected color codes, so the store does not need to upload every table/chair color combination manually.
+The Dining Set Configurator is not only a variation image swap. This avoids creating image files for Luna White, Luna Black, Tuna Green, and every other design/color combination. For the main preview, the client uploads one base dining-set image plus transparent PNG recolor masks for the table and chairs. The frontend canvas tints those masks from the selected color codes, so the store does not need to upload every table/chair color combination manually.
 
 Recommended image setup:
 
-- Base preview image: the full dining set scene.
+- Base scene image: optional full dining-set background/composition.
+- Table base image: one white/light neutral table image with shadows/details.
 - Table recolor mask: transparent PNG where only the table recolor area is visible.
-- Chair recolor mask: transparent PNG where only the chair recolor area is visible.
-- Chair design overlay/mask: optional per-design mask/image if the chair shape changes.
+- Chair thumbnail image: used only for the design swatch.
+- Chair base image: one white/light neutral chair image per design.
+- Chair recolor mask: one transparent PNG mask per chair design.
+- Chair detail overlay: optional per-design detail/texture layer if the chair shape needs it.
 
 If a mask is missing, the plugin safely falls back to the older preview image mapping when available, or the base image only.
 
@@ -109,7 +112,7 @@ For each table color, the client can edit:
 - Color name
 - Color code
 - Price adjustment
-- Optional fallback table preview image (advanced/fallback only)
+- Color code drives the canvas recolor; fallback preview image is optional advanced-only data
 
 ### 2. Chair designs
 
@@ -117,7 +120,9 @@ For each chair design, the client can edit:
 
 - Chair design name
 - Thumbnail image
-- Chair design overlay/mask image
+- Chair base image
+- Chair recolor mask image
+- Optional detail overlay image
 - Price adjustment
 - Available chair colors for that design
 
@@ -136,7 +141,7 @@ For each chair color, the client can edit:
 - Color name
 - Color code
 - Price adjustment
-- Optional fallback chair preview image (advanced/fallback only)
+- Color code drives the canvas recolor; fallback preview image is optional advanced-only data
 
 Chair color swatches show only when the customer selects **Choose different chair color**.
 
@@ -146,7 +151,7 @@ For exact chair previews, the client can map:
 
 - Chair design
 - Chair color
-- Optional fallback chair preview image (advanced/fallback only)
+- Color code drives the canvas recolor; fallback preview image is optional advanced-only data
 
 If no exact design/color image is provided, the frontend falls back to the chair design default image.
 

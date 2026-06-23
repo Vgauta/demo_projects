@@ -75,8 +75,13 @@ final class CWPC_Plugin {
 
 	public static function default_dining_schema() {
 		return array(
+			'button_label' => 'Customize & Add to Cart',
+			'included_chairs' => 6,
+			'sync_colors' => 'yes',
 			'base_image' => '',
 			'base_image_id' => 0,
+			'table_base' => '',
+			'table_base_id' => 0,
 			'table_mask' => '',
 			'table_mask_id' => 0,
 			'chair_mask' => '',
@@ -87,10 +92,10 @@ final class CWPC_Plugin {
 				array( 'name' => 'Champagne', 'color' => '#d6b98c', 'price' => 0, 'preview' => '', 'preview_id' => 0 ),
 			),
 			'chair_designs' => array(
-				array( 'name' => 'Luna', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
-				array( 'name' => 'Tuna', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
-				array( 'name' => 'Sano', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
-				array( 'name' => 'X Design', 'thumbnail' => '', 'thumbnail_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Luna', 'thumbnail' => '', 'thumbnail_id' => 0, 'base' => '', 'base_id' => 0, 'mask' => '', 'mask_id' => 0, 'overlay' => '', 'overlay_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Tuna', 'thumbnail' => '', 'thumbnail_id' => 0, 'base' => '', 'base_id' => 0, 'mask' => '', 'mask_id' => 0, 'overlay' => '', 'overlay_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'Sano', 'thumbnail' => '', 'thumbnail_id' => 0, 'base' => '', 'base_id' => 0, 'mask' => '', 'mask_id' => 0, 'overlay' => '', 'overlay_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
+				array( 'name' => 'X Design', 'thumbnail' => '', 'thumbnail_id' => 0, 'base' => '', 'base_id' => 0, 'mask' => '', 'mask_id' => 0, 'overlay' => '', 'overlay_id' => 0, 'preview' => '', 'preview_id' => 0, 'price' => 0, 'colors' => array( 'Mixed colors', 'Dark Grey', 'Black', 'Mustard', 'Green', 'Light Grey' ) ),
 			),
 			'extra_chairs' => array(
 				array( 'label' => '6 chairs included in price', 'quantity' => 0, 'price' => 0 ),
