@@ -102,8 +102,9 @@ Recommended image setup:
 - Chair base image: one white/light neutral chair image per design.
 - Chair recolor mask: one transparent PNG mask per chair design.
 - Chair detail overlay: optional per-design detail/texture layer if the chair shape needs it.
+- Layer position/size: simple X, Y, width, and height fields let the admin align the table and each chair design inside the canvas preview.
 
-If a mask is missing, the plugin safely falls back to the older preview image mapping when available, or the base image only.
+If a mask is missing, the plugin safely shows the available base image instead of failing. Older image-mapping data is kept only as an advanced fallback for existing products.
 
 ### 1. Table colors
 
@@ -112,7 +113,7 @@ For each table color, the client can edit:
 - Color name
 - Color code
 - Price adjustment
-- Color code drives the canvas recolor; fallback preview image is optional advanced-only data
+- Color code drives the canvas recolor. No per-color preview image is needed.
 
 ### 2. Chair designs
 
@@ -125,6 +126,7 @@ For each chair design, the client can edit:
 - Optional detail overlay image
 - Price adjustment
 - Available chair colors for that design
+- X/Y position and width/height for placing this chair design correctly in the canvas
 
 ### 3. Extra chairs
 
@@ -141,19 +143,15 @@ For each chair color, the client can edit:
 - Color name
 - Color code
 - Price adjustment
-- Color code drives the canvas recolor; fallback preview image is optional advanced-only data
+- Color code drives the canvas recolor. No per-color preview image is needed.
 
 Chair color swatches show only when the customer selects **Choose different chair color**.
 
-### Chair color images per design
+### Advanced fallback image mapping
 
-For exact chair previews, the client can map:
+Normal client setup does **not** require images for every chair color. The correct setup is one chair base image and one chair mask per design, then unlimited chair colors from hex color codes.
 
-- Chair design
-- Chair color
-- Color code drives the canvas recolor; fallback preview image is optional advanced-only data
-
-If no exact design/color image is provided, the frontend falls back to the chair design default image.
+The plugin may keep older fallback image mapping data for existing products, but this is not part of the normal client workflow and should only be used by a developer if a legacy product needs it.
 
 Image selections are saved with the WordPress Media Library attachment ID whenever possible. This keeps Hebrew and other Unicode filenames safe because the frontend asks WordPress for the final image URL instead of rebuilding URLs from filenames.
 Hebrew labels, option names, colors, chair names, addon names, and dropdown labels are saved as normal UTF-8 text, so the client can type Hebrew directly in the product editor.

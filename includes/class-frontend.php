@@ -89,6 +89,7 @@ class CWPC_Frontend {
 		$schema = json_decode( get_post_meta( $product_id, '_cwpc_dining_schema', true ), true );
 		if ( ! is_array( $schema ) ) { $schema = CWPC_Plugin::default_dining_schema(); }
 		$schema = $this->prepare_dining_schema( $schema );
+		$schema['debug'] = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? 'yes' : 'no';
 		$product_image = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'full' ) : '';
 		wp_enqueue_style( 'cwpc-frontend' ); wp_enqueue_script( 'cwpc-frontend' );
 		ob_start(); ?>
@@ -98,7 +99,7 @@ class CWPC_Frontend {
 			<div class="cwpc-dining-modal__dialog" role="dialog" aria-modal="true" aria-label="Dining set configurator">
 				<button type="button" class="cwpc-dining-modal__close" aria-label="Close" data-cwpc-close="1">&times;</button>
 				<div class="cwpc-dining-configurator" data-config='<?php echo esc_attr( wp_json_encode( $schema, CWPC_JSON_FLAGS ) ); ?>'>
-					<div class="cwpc-dining-preview"><canvas class="cwpc-dining-canvas" width="900" height="650" data-product-image="<?php echo esc_url( $product_image ); ?>" aria-label="Dining set preview"></canvas></div>
+					<div class="cwpc-dining-preview"><canvas class="cwpc-preview-canvas" width="900" height="650" data-product-image="<?php echo esc_url( $product_image ); ?>" aria-label="Dining set preview"></canvas></div>
 					<div class="cwpc-dining-fields">
 						<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
 						<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>
