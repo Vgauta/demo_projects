@@ -104,9 +104,10 @@ class CWPC_Frontend {
 						<div class="cwpc-step" data-step="1"><h4>1. Choose Table Color</h4><div class="cwpc-table-colors"></div></div>
 						<div class="cwpc-step" data-step="2"><h4>2. Choose Chair Design</h4><div class="cwpc-chair-designs"></div></div>
 						<div class="cwpc-step" data-step="3"><h4>3. Extra Chairs</h4><select class="cwpc-extra-chairs"></select></div>
-						<div class="cwpc-step" data-step="4"><h4>4. Chair Color</h4><div class="cwpc-chair-mode"><button type="button" class="cwpc-mode cwpc-active" data-mode="same">Same as table color</button><button type="button" class="cwpc-mode" data-mode="different">Choose different chair color</button></div></div>
+						<div class="cwpc-step" data-step="4"><h4>4. Chair Colors</h4><div class="cwpc-chair-mode"><button type="button" class="cwpc-mode cwpc-active" data-mode="same">All chairs are the same color</button><button type="button" class="cwpc-mode" data-mode="mixed">Choosing a color combination for chairs</button></div></div>
+						<div class="cwpc-step cwpc-mixed-note-step" data-step="4b"><h4>Chair color combination notes</h4><input type="text" class="cwpc-mixed-note" value=""></div>
 						<div class="cwpc-step cwpc-chair-color-step" data-step="5"><h4>5. Choose Chair Color</h4><div class="cwpc-chair-colors"></div></div>
-						<div class="cwpc-step" data-step="6"><h4>6. Addons</h4><div class="cwpc-addons"></div></div>
+						<div class="cwpc-step" data-step="6"><h4>6. 10% Discount on Covers / Addons</h4><div class="cwpc-addons"></div></div>
 						<div class="cwpc-dining-price"></div>
 						<button type="button" class="button alt cwpc-popup-add-to-cart">Add to Cart</button>
 					</div>

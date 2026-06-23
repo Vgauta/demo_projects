@@ -31,17 +31,13 @@ The default frontend flow is:
    - Add 4 extra chairs
    - Add 6 extra chairs
 
-4. **Chair Color**
-   - Same as table color
-   - Choose different chair color
+4. **Chair Colors**
+   - All chairs are the same color
+   - Choosing a color combination for chairs
 
 5. **Choose Chair Color**
-   - Mixed colors
-   - Dark Grey
-   - Black
-   - Mustard
-   - Green
-   - Light Grey
+   - Shows only colors available for the selected chair variant
+   - Example colors: Light Grey, Green, Mustard, Black
 
 6. **Addons**
    - Chair cushion
@@ -91,78 +87,80 @@ The product edit tab lets the client edit the default template with form fields.
 
 ### Dynamic canvas recolor preview
 
-The Dining Set Configurator is not only a variation image swap. This avoids creating image files for Luna White, Luna Black, Tuna Green, and every other design/color combination. For the main preview, the client uploads one base dining-set image plus transparent PNG recolor masks for the table and chairs. The frontend canvas tints those masks from the selected color codes, so the store does not need to upload every table/chair color combination manually.
+The Dining Set Configurator is not only a variation image swap. The client does **not** upload Luna White, Luna Black, Tuna Green, and every other color combination. Instead, the product uses one table base image, one table mask, one chair base image per chair variant, one chair mask per chair variant, and color hex codes. The frontend canvas tints the masks live, similar to a simple Canva/Kickflip-style recolor workflow.
 
 Recommended image setup:
 
-- Base scene image: optional full dining-set background/composition.
-- Table base image: one white/light neutral table image with shadows/details.
-- Table recolor mask: transparent PNG where only the table recolor area is visible.
-- Chair thumbnail image: used only for the design swatch.
-- Chair base image: one white/light neutral chair image per design.
-- Chair recolor mask: one transparent PNG mask per chair design.
-- Chair detail overlay: optional per-design detail/texture layer if the chair shape needs it.
-- Layer position/size: simple X, Y, width, and height fields let the admin align the table and each chair design inside the canvas preview.
+- Table preview/base image: one white/light neutral table image with shadows/details.
+- Table mask image: transparent PNG where only the table recolor area is visible.
+- Table X/Y/width/height: positions the table layer in the canvas.
+- Chair thumbnail image: used only for the chair model selector.
+- Chair preview/base image: one white/light neutral chair image per chair variant.
+- Chair mask image: one transparent PNG mask per chair variant.
+- Chair X/Y/width/height: positions that chair variant in the canvas.
 
-If a mask is missing, the plugin safely shows the available base image instead of failing. Older image-mapping data is kept only as an advanced fallback for existing products.
+No image upload field is needed inside table color items or chair color items. Colors are controlled by name, hex color code, and optional extra price.
 
-### 1. Table colors
+### Product admin sections
 
-For each table color, the client can edit:
+When editing a product, open **Product Data → Dining Set Configurator** and use these sections:
 
-- Color name
-- Color code
-- Price adjustment
-- Color code drives the canvas recolor. No per-color preview image is needed.
+1. **General Settings**
+   - Enable Configurator
+   - Popup button text
+   - Base included chairs count
 
-### 2. Chair designs
+2. **Table Preview**
+   - Table preview/base image
+   - Table mask image
+   - Table X position
+   - Table Y position
+   - Table Width
+   - Table Height
 
-For each chair design, the client can edit:
+3. **Table Colors**
+   - Color name
+   - Hex color code
+   - Optional extra price
+   - No per-color image upload
 
-- Chair design name
-- Thumbnail image
-- Chair base image
-- Chair recolor mask image
-- Optional detail overlay image
-- Price adjustment
-- Available chair colors for that design
-- X/Y position and width/height for placing this chair design correctly in the canvas
+4. **Chair Variants**
+   - Chair name
+   - Thumbnail image
+   - Chair preview/base image
+   - Chair mask image
+   - Chair X position
+   - Chair Y position
+   - Chair Width
+   - Chair Height
+   - Optional extra price
 
-### 3. Extra chairs
+5. **Chair Colors Per Chair Variant**
+   - Add the colors available for that exact chair variant.
+   - Each color uses: color name, hex color code, and optional extra price.
+   - Different chair variants can have different color lists.
+   - No per-color image upload is needed.
 
-For each extra chair dropdown option, the client can edit:
+6. **Extra Chair Options**
+   - Label
+   - Quantity
+   - Extra price
 
-- Label
-- Quantity
-- Extra price
+7. **Chair Color Mode Options**
+   - Enable “All chairs are the same color”
+   - Enable “Choose a color combination for chairs”
+   - Set the placeholder text for mixed color notes
 
-### 4. Chair colors
-
-For each chair color, the client can edit:
-
-- Color name
-- Color code
-- Price adjustment
-- Color code drives the canvas recolor. No per-color preview image is needed.
-
-Chair color swatches show only when the customer selects **Choose different chair color**.
+8. **Cover / Addons**
+   - Addon name
+   - Price
+   - Enabled checkbox
 
 ### Advanced fallback image mapping
 
-Normal client setup does **not** require images for every chair color. The correct setup is one chair base image and one chair mask per design, then unlimited chair colors from hex color codes.
+Normal client setup does **not** require images for every chair color. The correct setup is one chair base image and one chair mask per variant, then unlimited colors from hex color codes. Older fallback mapping can remain only inside the advanced area for legacy products.
 
-The plugin may keep older fallback image mapping data for existing products, but this is not part of the normal client workflow and should only be used by a developer if a legacy product needs it.
-
-Image selections are saved with the WordPress Media Library attachment ID whenever possible. This keeps Hebrew and other Unicode filenames safe because the frontend asks WordPress for the final image URL instead of rebuilding URLs from filenames.
-Hebrew labels, option names, colors, chair names, addon names, and dropdown labels are saved as normal UTF-8 text, so the client can type Hebrew directly in the product editor.
-
-### 5. Addons
-
-For each addon, the client can edit:
-
-- Addon name
-- Price
-- Enabled/disabled status
+Image selections are saved with the WordPress Media Library attachment ID whenever possible. This keeps Hebrew and other Unicode filenames safe because the frontend asks WordPress for the final image URL instead of rebuilding URLs from filenames. Hebrew labels, option names, colors, chair names, addon names, and dropdown labels are saved as normal UTF-8 text, so the client can type Hebrew directly in the product editor.
 
 ---
 
@@ -179,14 +177,15 @@ Inside the popup:
 The customer flow is:
 
 1. Click **Customize & Add to Cart**.
-2. Choose table color.
-3. Choose chair design.
-4. Choose extra chairs.
-5. Choose whether chair color is the same as table color or different.
-6. If different, choose chair color.
-7. Choose addons.
-8. Review live price update.
-9. Add to cart from inside the popup.
+2. Choose a table color; the table recolors live on the canvas.
+3. Choose a chair model; the chair base/mask changes in the preview.
+4. Choose additional chairs for a fee.
+5. Choose chair color mode: **All chairs are the same color** or **Choosing a color combination for chairs**.
+6. Choose a chair color from the selected chair model’s available swatches; the chair recolors live.
+7. If mixed color mode is selected, enter chair color combination notes.
+8. Choose cover/addon options.
+9. Review live price update.
+10. Add to cart from inside the popup.
 
 ---
 
@@ -198,7 +197,8 @@ When the customer adds the product to cart, the plugin saves:
 - Chair Design
 - Extra Chairs
 - Chair Color mode
-- Chair Color if different
+- Chair Color
+- Mixed chair color notes when entered
 - Addons
 - Price adjustment
 - Preview layer image URLs when available
