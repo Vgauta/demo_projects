@@ -87,19 +87,17 @@ The product edit tab lets the client edit the default template with form fields.
 
 ### Dynamic canvas recolor preview
 
-The Dining Set Configurator is not only a variation image swap. The client does **not** upload Luna White, Luna Black, Tuna Green, and every other color combination. Instead, the product uses one table base image, one table mask, one chair base image per chair variant, one chair mask per chair variant, and color hex codes. The frontend canvas tints the masks live, similar to a simple Canva/Kickflip-style recolor workflow.
+The Dining Set Configurator is not only a variation image swap. The client does **not** upload Luna White, Luna Black, Tuna Green, and every other color combination. Instead, the product uses one white/light table base image, one white/light chair base image per chair variant, and color hex codes. The frontend canvas recolors the base images by reading their luminance, preserving shadows, highlights, texture, and transparency, similar to a simple Canva/Kickflip-style recolor workflow.
 
 Recommended image setup:
 
 - Table preview/base image: one white/light neutral table image with shadows/details.
-- Table mask image: transparent PNG where only the table recolor area is visible.
 - Table X/Y/width/height: positions the table layer in the canvas.
 - Chair thumbnail image: used only for the chair model selector.
 - Chair preview/base image: one white/light neutral chair image per chair variant.
-- Chair mask image: one transparent PNG mask per chair variant.
 - Chair X/Y/width/height: positions that chair variant in the canvas.
 
-No image upload field is needed inside table color items or chair color items. Colors are controlled by name, hex color code, and optional extra price.
+No mask knowledge and no image upload field is needed inside table color items or chair color items. Colors are controlled by name, hex color code, and optional extra price.
 
 ### Product admin sections
 
@@ -112,7 +110,6 @@ When editing a product, open **Product Data → Dining Set Configurator** and us
 
 2. **Table Preview**
    - Table preview/base image
-   - Table mask image
    - Table X position
    - Table Y position
    - Table Width
@@ -128,7 +125,6 @@ When editing a product, open **Product Data → Dining Set Configurator** and us
    - Chair name
    - Thumbnail image
    - Chair preview/base image
-   - Chair mask image
    - Chair X position
    - Chair Y position
    - Chair Width
@@ -158,7 +154,7 @@ When editing a product, open **Product Data → Dining Set Configurator** and us
 
 ### Advanced fallback image mapping
 
-Normal client setup does **not** require images for every chair color. The correct setup is one chair base image and one chair mask per variant, then unlimited colors from hex color codes. Older fallback mapping can remain only inside the advanced area for legacy products.
+Normal client setup does **not** require images for every chair color, and the client does not need to understand masks. The correct setup is one white/light table base image and one white/light chair base image per variant, then unlimited colors from hex color codes. Older advanced mapping can remain only for legacy products.
 
 Image selections are saved with the WordPress Media Library attachment ID whenever possible. This keeps Hebrew and other Unicode filenames safe because the frontend asks WordPress for the final image URL instead of rebuilding URLs from filenames. Hebrew labels, option names, colors, chair names, addon names, and dropdown labels are saved as normal UTF-8 text, so the client can type Hebrew directly in the product editor.
 
@@ -178,7 +174,7 @@ The customer flow is:
 
 1. Click **Customize & Add to Cart**.
 2. Choose a table color; the table recolors live on the canvas.
-3. Choose a chair model; the chair base/mask changes in the preview.
+3. Choose a chair model; the chair white/base image changes in the preview.
 4. Choose additional chairs for a fee.
 5. Choose chair color mode: **All chairs are the same color** or **Choosing a color combination for chairs**.
 6. Choose a chair color from the selected chair model’s available swatches; the chair recolors live.
